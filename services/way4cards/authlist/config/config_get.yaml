@@ -1,0 +1,37 @@
+# WS http path = <host>:<port>/<url>
+PORT : 8081
+URL : 'authlist'
+
+# LOG_LEVEL 20 -- production , 10 -- debug
+LOG_LEVEL : 20
+
+# get data SQL
+SQL_GET : >
+  SELECT 'Hello1' as parm1, 'World1' as parm2 FROM DUAL
+  where
+    1 = :mainContractNumber
+  union all
+  SELECT 'Hello2' as parm1, 'World2' as parm2 FROM DUAL
+  where
+    2 = :inp2
+
+# Max rows for result. It depends on server's memory size.
+MAX_FETCH_ROWS : 1000
+
+# WS documentation http path <host>:<port>
+SPECIFICATIONS:
+  SERVICE_DESCRITION:
+    TITLE: "WAY4 CARDS API"
+    DESCRITION: "Get active auth transaction list for client's cards "
+    VERSION: "2020_01_01"
+  GET_DESCRITION:
+    DESCRITION: "Get active auth list for client's cards by main contract id"
+    INPUT_REQUIRED_FIELDS:
+      mainContractNumber: "Main contract number"
+      inp2: "inp2 descr"
+    RESPONCE_FIELDS:
+      parm1: "parm1 descr"
+      parm2: "parm2 descr"
+
+# WS status check http path <host>:<port>/status
+statDepts: 1 # statistics depth in minutes

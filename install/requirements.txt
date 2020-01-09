@@ -1,0 +1,6 @@
+flask
+flask_restplus
+cx_Oracle
+pyyaml
+cryptography
+gunicorn
