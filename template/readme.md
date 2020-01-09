@@ -7,8 +7,9 @@
 быть одинаково с настройками конфигурации сервиса и
 каталогом размещения.
 
-Общие сведения более подробно можно получить например из этой статьи
+Общие сведения более подробно можно получить например из этих статей
 https://www.digitalocean.com/community/tutorials/how-to-set-up-django-with-postgres-nginx-and-gunicorn-on-ubuntu-18-04-ru 
+https://www.8host.com/blog/obsluzhivanie-prilozhenij-flask-s-pomoshhyu-gunicorn-i-nginx-v-ubuntu-16-04/
 
 ### serviced install
 

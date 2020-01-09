@@ -1,0 +1,11 @@
+[Unit]
+Description= getAuthList socket
+
+[Socket]
+# Change name template -> ??? !!!
+ListenStream=/home/flask/api/socket/getAuthList.sock
+User=flask
+Group=www-data
+
+[Install]
+WantedBy=sockets.target

@@ -93,6 +93,7 @@ class stableApi(Resource):
         else:
             serviseStat.putErrItem()
             buf['records'] =[]
+            dtime = round(time.time() - start_time, 4)
         log.info("Message UID:%s, processed in --- %s seconds ---" % (uid,dtime))
         return buf, buf['rc']
     # except:

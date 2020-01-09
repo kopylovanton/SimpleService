@@ -5,7 +5,7 @@ from resources import kstore
 # ************* Oracle connection
 class Oracle(object):
 
-    def __init__(self, username, pas, conn_string, enc, logging, enccp='utf-8'):
+    def __init__(self, username, pas, conn_string, enc, logging, current_schema, enccp='utf-8'):
         self.username = username
         self.pwd = pas
         self.conn_string = conn_string
@@ -13,9 +13,11 @@ class Oracle(object):
         self.__connected = False
         self.log=logging
         self.cpage=enccp
+        self.current_schema =current_schema
         try:
             self.db = cx_Oracle.connect(self.username, self.get_password(), self.conn_string, encoding=self.encoding)
             self.data = {'rc': 200, 'message': 'DB connected'}
+            self.db.current_schema =self.current_schema
             self.__connected = True
             self.log.info('DB <%s> connection started' % (self.conn_string))
         except cx_Oracle.DatabaseError as e:
@@ -36,6 +38,7 @@ class Oracle(object):
             # we-re going to use.
             self.data = {'rc': 200, 'message': 'DB connected'}
             self.__connected = True
+            self.db.current_schema = self.current_schema
             self.log.info('Message UID:%s - DB <%s> connection started' % (uid, self.conn_string))
         except cx_Oracle.DatabaseError as e:
             errorObj, = e.args
