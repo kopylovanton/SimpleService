@@ -100,7 +100,7 @@ class stableApi(Resource):
     # return 'Server internal error', 500
 
 # get status API
-status_check_model = api.model('Status Check', {
+status_check_model = api.model('Status_Check', {
     'rc'       : fields.Integer(required=True, description='Responce code'),
     'message'  : fields.String(required=True, description='Responce message'),
     'db_status': fields.String(required=True, description='DB connection status UP/DOWN'),
