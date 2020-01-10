@@ -47,7 +47,7 @@
 **[cx-oracle.readthedocs.io](https://cx-oracle.readthedocs.io/en/latest/user_guide/installation.html])**
 и **[help.ubuntu.com](https://help.ubuntu.com/community/Oracle%20Instant%20Client])**
 
-- [загрузить на сервер Basic клиент] (https://www.oracle.com/database/technologies/instant-client/linux-x86-64-downloads.html)
+- [загрузить на сервер Basic клиент](https://www.oracle.com/database/technologies/instant-client/linux-x86-64-downloads.html)
 
 > sudo apt-get install alien
 > 
