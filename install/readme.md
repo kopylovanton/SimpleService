@@ -9,10 +9,6 @@
 
 Последовательность установки. 
 ============================
-Примеры команд приведены для Ubuntu из https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-gunicorn-and-nginx-on-ubuntu-18-04
-Анологичный пример для Centos https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-gunicorn-and-nginx-on-centos-7
-При отладке конфигурации использовались только 64 битные компоненты
---------------------------------------------------------
 Создать системного пользователя flask
 > adduser flask
 >
@@ -90,3 +86,10 @@ export PATH=$PATH:$ORACLE_HOME/bin
 * Статус
 > systemctl status nginx
 
+-------------
+
+Примеры команд приведены для Ubuntu из https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-gunicorn-and-nginx-on-ubuntu-18-04
+
+Анологичный пример для Centos https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-gunicorn-and-nginx-on-centos-7
+
+При отладке конфигурации использовались только 64 битные компоненты
