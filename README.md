@@ -1,51 +1,52 @@
-# Предвариетльная настройка сервера 
-Требуется создать пользователя, установить Nginx, установить python 3 и необходимые пакеты.
 
-### Последовательность самостоятельной установки. 
-Примеры команд приведены для Ubuntu из https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-gunicorn-and-nginx-on-ubuntu-18-04
+Simple service
+=============
 
-Анологичный пример для Centos https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-gunicorn-and-nginx-on-centos-7
-
-1. Создать пользователя flask
-> adduser flask
-> usermod -aG sudo flask
-
-2. Уствновить Nginx https://nginx.org/ru/linux_packages.html 
-> sudo apt update
-> sudo apt install nginx
-> sudo systemctl enable nginx
-
-3. Настройка файрвола для HTTP
-> sudo ufw app list
-> sudo ufw allow 'Nginx HTTP'
+Проект для создания REST сервисов интеграции с процессинговой системой. 
+Основные возможности:
+- Конфигурация SQL запроса, полей запросов и ответов
+- Атодокументирование swagger 
+- Количество потоков/воркеров задается в конфигурации
+- Автоматическое переподключение к базе данных
+- Автоматический старт и рестарт приложения
+- Дополнительный REST запрос для получения информации о работе сервиса и встраивания в системы мониторинга
 
 
-4. Проверить, что Nginx запущен
-> systemctl status nginx
+Compatibility
+=============
 
-2. Установить python 3.6(7).*
-> sudo apt install python3-pip python3-dev build-essential libssl-dev libffi-dev python3-setuptools
-> sudo apt install python3-venv
-> sudo apt install python-pip
-
-3. Настроить окружение python для сервисов 
-> mkdir ~/api
-> cd ~/api
-> python3.6 -m venv python-api-env
-2. Установить пакеты python перечисленные в requirements.txt 
-> source python-api-env/bin/activate
-> (python-api-env) $ sudo -H pip install wheel
-> (python-api-env) $ sudo -H pip install -r requirements.txt
-
-# Администрирование
-1. Управление Nginx
-* Запуск
->sudo systemctl stop nginx
-* Остановка
->sudo systemctl start nginx
-* Перечитать конфигурацию
->sudo systemctl reload nginx
+Проект построен на open sourse стеке: 
+- Nginx для проксирования запросов
+- Gunicorn в качестве апликационного сервиса
+- Flask и Flask-Restplus для описания формата запроса
+- Cx-Oracle для подключения к базе данных
 
 
-### Последовательность установки с использованием Docker
+Technical Requirements
+============
 
+Аппаратные: 
+- процессорныя ядра из расчета 1 ядро на два потока (базовая конфигурация 2ядра).
+- оперативная память 2Gb
+
+Программные:
+- Операционная система Ubuntu 18 (CentOS 7)
+- Nginx
+- python 3.6 (текущая стабильная версия из репозитория) 
+- пакеты python перечислены в /install/requirements.txt
+- Oracle Instant Client
+- systemd
+
+Installation
+============
+
+Предварительная настройка сервера описана в каталоге /install/readme.md
+Процедура настройки нового сервиса описана в /template/readme.md
+
+
+Resources
+=============
+
+- /install : инструкции по предварительной настройки сервера
+- /template : интструкции по конфигурации нового сервиса
+- /service : готовые конфигурации для сервисов могут быть использованы при настройки нового сервиса

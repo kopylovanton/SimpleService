@@ -1,18 +1,35 @@
-### Запуск и остановку рекомендуется производить с помощью сервиса 
-Файлы .service и .socket необходимы для настройки запуска и 
-рутинга трафика с Nginx на новый сервис. Для каждого нового 
-сервиса требуется создать новые копии файла изменив наименование 
-файла и содержимое на действительное имя сервиса 
-(изменить template на новое действительное имя сервиса). Это имя должно 
-быть одинаково с настройками конфигурации сервиса и
-каталогом размещения.
+Конфигурирование нового сервиса
+===============================
+В данном разделе представлена конфигурации базового сервиса 
+на основе select * from dual запроса.
 
-Общие сведения более подробно можно получить например из этих статей
-https://www.digitalocean.com/community/tutorials/how-to-set-up-django-with-postgres-nginx-and-gunicorn-on-ubuntu-18-04-ru 
-https://www.8host.com/blog/obsluzhivanie-prilozhenij-flask-s-pomoshhyu-gunicorn-i-nginx-v-ubuntu-16-04/
+Предусловие: выполнены настройки сервера из описание /install/readme.md
+Предполагается, что все сервисы подключаются к базе данных Oracle под одним служебным пользователем flask.
 
-### serviced install
+При разворачивании очередного сервиса на сервере необходимо:
 
+- придумать уникальной имя сервиса, например getAuthList
+- скопировать базовую конфигурацию на Linux сервер под пользователем flask по пути ~/api/<service name>/
+- сконфигурировать согласно инструкции новый сокет и сервис для службы serviced
+- произвести настройку межкомпонентного взаимодействия  
+- провести настройку или скопировать готовую конфигурацию сервиса
+- предоставить пользователю flask базы данных права на select/execute для объектов из Select выражения
+
+Перечень файлов
+---------------
+- /config/config_get.yaml  - конфигурации сервиса
+- /config/configdb.yaml - параметры доступа к базе данных. Пароль указаывается в открытом виде и автоматически шифруется и заменяется в файле при первом запуске
+- /config/gunicorn.py - параметры аппликационного сервера. Тут можно конфигурировать количество потоков/воркеров (не более 2хКоличество ядер +1)
+- /logs/ - сюда будут сохранены логи после старта сервиса 
+- /nginx/ - конфигурация Nginx
+- /resources/ - исполняемый код 
+- /systemd/ - шаблоны конфигураций сервиса и сокета
+- run.sh - скрипт запуска (его использует сервис systemd для запуска приложения) 
+- wsgi_get.py - базовый wsgi исполняемый файл
+
+
+Настройка межкомпонентного взаимодействия
+-----------------------------------
 - переименовать файл api-<service_name>.socket и api-<service_name>.socket
 отредактировать файл. Заменить template на действительное 
 уникальное имя сервиса (например authlist)
@@ -43,7 +60,9 @@ ListenStream=/home/flask/api/socket/authlist.sock
 >
 > systemctl enable api-authlist.socket
 
-### Проверка
+Проверка
+--------
+
 > sudo systemctl status api-authlist.socket
 
 > sudo file /home/flask/api/socket/authlist.sock
@@ -60,7 +79,8 @@ Gunicorn с помощью следующей команды:
 Еще раз проверьте файл /etc/systemd/system/api-authlist.socket и 
 устраните любые обнаруженные проблемы, прежде чем продолжить
 
-# Тестирование активации сокета
+Тестирование активации сокета
+-----------------------------
 Если вы запустили только api-authlist.socket, 
 служба api-authlist.service не будет активна в связи с 
 отсутствием подключений к совету. Для проверки можно ввести 
@@ -89,7 +109,10 @@ Gunicorn с помощью следующей команды:
 >systemctl status api-authlist
 
 
-## Добавить для первого сервиса или изменить конфигурацию nginx при добавлении нового 
+Настройка конфигурации Nginx
+----------------------------
+Добавить для первого сервиса или изменить конфигурацию nginx при добавлении нового 
+
 > sudo cp ./nginx/api-config /etc/nginx/sites-available/
 
 > sudo ln -s /etc/nginx/sites-available/api-config /etc/nginx/sites-enabled
@@ -98,16 +121,16 @@ Gunicorn с помощью следующей команды:
  
  изменить для первого сервиса или 
  добавить блок заменив два раза template на имя нового сервиса,
- например authlist
+ например getauthlist
  
-    location /authlist {
+    location /getauthlist {
       proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
       proxy_set_header X-Forwarded-Proto $scheme;
       proxy_set_header Host $http_host;
       # we don't want nginx trying to do something clever with
       # redirects, we set the Host: header above already.
       proxy_redirect off;
-      proxy_pass http://unix:/home/flask/api/socket/authlist.sock;
+      proxy_pass http://unix:/home/flask/api/socket/getauthlist.sock;
     }
 
 Протестируйте конфигурацию Nginx на ошибки синтаксиса:
@@ -118,8 +141,8 @@ Gunicorn с помощью следующей команды:
 
 > sudo systemctl restart nginx
 
-## Примеры команды управления сервисом
-
+Примеры команды управления сервисом
+----------------------------------
 ### Start your service
 systemctl start api-authlist
 systemctl start api-authlist.socket
@@ -131,3 +154,8 @@ systemctl status api-authlist
 systemctl stop api-authlist
 systemctl stop api-authlist.socket
 
+
+----------------------
+Общие сведения по установке и настройки более подробно можно получить например из этих статей
+https://www.digitalocean.com/community/tutorials/how-to-set-up-django-with-postgres-nginx-and-gunicorn-on-ubuntu-18-04-ru 
+https://www.8host.com/blog/obsluzhivanie-prilozhenij-flask-s-pomoshhyu-gunicorn-i-nginx-v-ubuntu-16-04/
