@@ -27,75 +27,100 @@
 - run.sh - скрипт запуска (его использует сервис systemd для запуска приложения) 
 - wsgi_get.py - базовый wsgi исполняемый файл
 
+Конфигурирование сервиса
+------------------------
+
+
 
 Настройка межкомпонентного взаимодействия
 -----------------------------------
+
+- скопировать содержимое /template в ~/api/<service name>/
+- выполнить 
+```
+sudo chmod +x run.sh 
+```
+
 - переименовать файл api-<service_name>.socket и api-<service_name>.socket
 отредактировать файл. Заменить template на действительное 
-уникальное имя сервиса (например authlist)
+уникальное имя сервиса (например getauthlist)
+```
+sudo mv api-template.service api-<service_name>.service
+sudo mv api-template.socket api-<service_name>.socket
+```
+
 и отредактировать файлы 
 
-service:
-> change path !!!!
->
->WorkingDirectory=/home/flask/api/authlist
 
-socket:
-> Change name template -> ??? !!!
-ListenStream=/home/flask/api/socket/authlist.sock
-
-- выполнить команды (примеры приведены для сервиса с названием authlist)
 ```
-sudo cp api-authlist.service /etc/systemd/system
-sudo cp api-authlist.socket /etc/systemd/system
-sudo chmod 755 /etc/systemd/system/api-authlist.service
-sudo chmod 755 /etc/systemd/system/api-authlist.socket
+sudo nano api-<service_name>.service
+```
+
+```
+Description=Service1 api daemon
+Requires=api-service1.socket
+#change path !!!!
+WorkingDirectory=/home/flask/api/<service_name>
+```
+
+```
+sudo nano api-<service_name>.socket
+```
+> Change name template -> ??? !!!
+ListenStream=/home/flask/api/socket/<service_name>.sock
+
+- выполнить команды (примеры приведены для сервиса с названием <service_name>=getauthlist)
+```
+sudo cp api-getauthlist.service /etc/systemd/system
+sudo cp api-getauthlist.socket /etc/systemd/system
+sudo chmod 755 /etc/systemd/system/api-getauthlist.service
+sudo chmod 755 /etc/systemd/system/api-getauthlist.socket
 sudo systemctl daemon-reload
-systemctl start api-authlist.socket
-systemctl enable api-authlist.socket
+sudo systemctl start api-getauthlist.socket
+sudo systemctl enable api-getauthlist.socket
 ```
 
 Проверка
 --------
 ```
-sudo systemctl status api-authlist.socket
-sudo file /home/flask/api/socket/authlist.sock
+sudo systemctl status api-getauthlist.socket
+sudo file /home/flask/api/socket/getauthlist.sock
 ```
 
->Output - /home/flask/api/socket/authlist.sock: socket
+>Output - /home/flask/api/socket/getauthlist.sock: socket
 
 Если команда systemctl status указывает на ошибку, или если 
-в каталоге отсутствует файл gunicorn.sock, это означает, что 
-сокет Gunicorn не удалось создать. Проверьте журналы сокета 
-Gunicorn с помощью следующей команды:
+в каталоге отсутствует файл <service_name>.sock, это означает, что 
+сокет не удалось создать. Проверьте журналы сокета с помощью следующей команды:
+
 ```
-sudo journalctl -u api-authlist.socket
+sudo journalctl -u api-<service_name>.socket
 ```
 
-Еще раз проверьте файл /etc/systemd/system/api-authlist.socket и 
+Еще раз проверьте файл /etc/systemd/system/api-getauthlist.socket и 
 устраните любые обнаруженные проблемы, прежде чем продолжить
 
 Тестирование активации сокета
 -----------------------------
-Если вы запустили только api-authlist.socket, 
-служба api-authlist.service не будет активна в связи с 
-отсутствием подключений к совету. Для проверки можно ввести 
+Если вы запустили только api-getauthlist.socket, 
+служба api-getauthlist.service не будет активна в связи с 
+отсутствием подключений к сокету. Для проверки можно ввести 
 следующую команду:
 ```
-sudo systemctl status api-authlist
+sudo systemctl status api-getauthlist
 ```
 
 >Output
 
->> api-authlist.service - api-authlist daemon
+>> api-authlist.service - api-getauthlist daemon
    
->>Loaded: loaded (/etc/systemd/system/api-authlist.service; disabled; vendor preset: enabled)
+>>Loaded: loaded (/etc/systemd/system/api-getauthlist.service; disabled; vendor preset: enabled)
   
 >> Active: inactive (dead)
 
 Чтобы протестировать механизм активации сокета, установим соединение с сокетом через curl с помощью следующей команды:
 ```
-sudo curl --unix-socket /home/flask/api/socket/authlist.sock localhost/service1/status
+sudo curl --unix-socket /home/flask/api/socket/getauthlist.sock localhost/getAuthList/status
 ```
 
 Выводимые данные приложения должны отобразиться в терминале 
@@ -105,7 +130,7 @@ sudo curl --unix-socket /home/flask/api/socket/authlist.sock localhost/service1/
 с помощью следующей команды:
 
 ```
-systemctl status api-authlist
+systemctl status api-getauthlist
 ```
 
 
