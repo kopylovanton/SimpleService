@@ -1,65 +1,55 @@
-[The Link Contains the List of Oracle 12c R2 Database Releases.](https://www.oracle.com/database/technologies/oracle-database-software-downloads.html)
+### Step 0:
+Start downloading rpm 19.X the install files from [Oracle](http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html)
 
---------------------
-  
-unzip -d /tmp linuxx64_122*.zip
+### Step 1:
+Create a blank CentOs 7 instance
 
-sudo groupadd -g 505 asmadmin
+Convert to Oracle Linux: ([source](https://linux.oracle.com/switch/centos/))
+```
+curl -O https://linux.oracle.com/switch/centos2ol.sh 
+sh centos2ol.sh
+yum upgrade
+```
 
-sudo groupadd -g 503 dba
+### Step 2:
 
-sudo groupadd -g 504 oper
+Install database preinstall package:
+```
+yum -y install oracle-database-preinstall-19c
+```
 
-sudo groupadd nobody
+Copy install files from your machine to the server
+```
+scp oracle-database-ee-19c-1.0-1.x86_64.rpm root@167.71.60.173:/tmp
 
-sudo groupadd -g 505 asmadmin
-
-sudo useradd -u 502 -g oinstall -G dba,asmadmin,oper -s /bin/bash -m oracle
-
-------------------
-
-sudo mkdir -p /u01/app/oracle/product/12/dbhome_1
-
-sudo chown -R oracle:oinstall /u01
-
-sudo chmod -R 775 /u01
-
-sudo chown -R oracle:oinstall /tmp/database
-
----------------------
+```
 
 
-hostname
+[Install the database software using the yum localinstall command](https://docs.oracle.com/en/database/oracle/oracle-database/19/ladbi/running-rpm-packages-to-install-oracle-database.html#GUID-BB7C11E3-D385-4A2F-9EAF-75F4F0AACF02)
+``` 
+yum -y localinstall oracle-database-ee-19c-1.0-1.x86_64.rpm
+```
 
-/sbin/ifconfig
+### Step 3
 
-sudo nano /etc/hosts
+configure/change host name to real IP
 
------------------------
+```
+host
+ifconfig 
+nano /etc/hosts
+```
 
+Creating and Configuring an Oracle Database
 
-sudo apt install xorg
+To create a sample database with the default settings, perform the following steps:
 
-sudo apt install gksu
+Log in as root.
 
-sudo xhost +[myIP]
+To configure a sample Oracle Database instance, run the following service configuration script:
 
------------------
+# /etc/init.d/oracledb_ORCLCDB-19c configure
+Note:You can modify the configuration parameters by editing the /etc/sysconfig/oracledb_ORCLCDB-19c.conf file.
+This script creates a container database (ORCLCDB) with one pluggable database (ORCLPDB1) and configures the listener at the default port (1521).
 
-sudo nano /etc/sysctl.conf
-
-`##### Oracle 12c R2 Kernel Parameters`
-fs.suid_dumpable = 1
-fs.aio-max-nr = 1048576
-fs.file-max = 6815744
-kernel.shmall = 818227
-kernel.shmmax = 4189323264
-kernel.shmmni = 4096
-kernel.panic_on_oops = 1
-`##### semaphores: semmsl, semmns, semopm, semmni`
-kernel.sem = 250 32000 100 128
-net.ipv4.ip_local_port_range = 9000 65500
-net.core.rmem_default=262144
-net.core.rmem_max=4194304
-net.core.wmem_default=262144
-net.core.wmem_max=1048576
+Review the status information that is displayed on your screen.
