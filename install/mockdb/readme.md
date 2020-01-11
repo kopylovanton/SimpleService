@@ -1,5 +1,7 @@
 [The Link Contains the List of Oracle 12c R2 Database Releases.](https://www.oracle.com/database/technologies/oracle-database-software-downloads.html)
 
+<code>
+  
 unzip -d /tmp linuxx64_122*.zip
 sudo groupadd -g 505 asmadmin
 sudo groupadd -g 503 dba
@@ -17,14 +19,14 @@ hostname
 /sbin/ifconfig
 sudo nano /etc/hosts
 
-`#sudo apt install xorg
-#sudo apt install gksu
-#sudo xhost +[myIP]
-`
+sudo apt install xorg
+sudo apt install gksu
+sudo xhost +[myIP]
+
 sudo nano /etc/sysctl.conf
 
-`
-#### Oracle 12c R2 Kernel Parameters ####
+
+# Oracle 12c R2 Kernel Parameters 
 fs.suid_dumpable = 1
 fs.aio-max-nr = 1048576
 fs.file-max = 6815744
@@ -39,4 +41,5 @@ net.core.rmem_default=262144
 net.core.rmem_max=4194304
 net.core.wmem_default=262144
 net.core.wmem_max=1048576
-`
+
+<code>
