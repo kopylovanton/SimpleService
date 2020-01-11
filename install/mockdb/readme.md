@@ -47,8 +47,9 @@ To create a sample database with the default settings, perform the following ste
 Log in as root.
 
 To configure a sample Oracle Database instance, run the following service configuration script:
-
-# /etc/init.d/oracledb_ORCLCDB-19c configure
+```
+/etc/init.d/oracledb_ORCLCDB-19c configure
+```
 Note:You can modify the configuration parameters by editing the /etc/sysconfig/oracledb_ORCLCDB-19c.conf file.
 This script creates a container database (ORCLCDB) with one pluggable database (ORCLPDB1) and configures the listener at the default port (1521).
 
