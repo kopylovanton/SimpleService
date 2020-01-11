@@ -19,6 +19,7 @@ $ usermod -aG sudo flask
 ```
 su flask
 cd ~/
+sudo apt update
 sudo apt install python3-pip python3-dev build-essential libssl-dev libffi-dev python3-setuptools
 sudo apt install python3-venv
 sudo apt install python-pip
@@ -55,9 +56,10 @@ sudo ldconfig
 
 - создать файл, добавить в него две записи и сохранить
 ```
-sudo vi /etc/profile.d/oracle.sh && sudo chmod o+r /etc/profile.d/oracle.sh
+sudo nano /etc/profile.d/oracle.sh && sudo chmod o+r /etc/profile.d/oracle.sh
 export ORACLE_HOME=/usr/lib/oracle/19.5/client64`
 export PATH=$PATH:$ORACLE_HOME/bin`
+
 sudo ln -s /usr/include/oracle/19.5/client $ORACLE_HOME/include
 ```
 
@@ -65,7 +67,6 @@ sudo ln -s /usr/include/oracle/19.5/client $ORACLE_HOME/include
 [Установить Nginx] (https://nginx.org/ru/linux_packages.html)
 
 ```
-sudo apt update
 sudo apt install nginx
 sudo systemctl enable nginx
 systemctl status nginx
