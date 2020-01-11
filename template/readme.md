@@ -45,36 +45,32 @@ socket:
 ListenStream=/home/flask/api/socket/authlist.sock
 
 - выполнить команды (примеры приведены для сервиса с названием authlist)
-
-> sudo cp api-authlist.service /etc/systemd/system
-> 
-> sudo cp api-authlist.socket /etc/systemd/system
->
-> sudo chmod 755 /etc/systemd/system/api-authlist.service
-> 
-> sudo chmod 755 /etc/systemd/system/api-authlist.socket
->
-> sudo systemctl daemon-reload
-> 
-> systemctl start api-authlist.socket
->
-> systemctl enable api-authlist.socket
+```
+sudo cp api-authlist.service /etc/systemd/system
+sudo cp api-authlist.socket /etc/systemd/system
+sudo chmod 755 /etc/systemd/system/api-authlist.service
+sudo chmod 755 /etc/systemd/system/api-authlist.socket
+sudo systemctl daemon-reload
+systemctl start api-authlist.socket
+systemctl enable api-authlist.socket
+```
 
 Проверка
 --------
+```
+sudo systemctl status api-authlist.socket
+sudo file /home/flask/api/socket/authlist.sock
+```
 
-> sudo systemctl status api-authlist.socket
-
-> sudo file /home/flask/api/socket/authlist.sock
->
 >Output - /home/flask/api/socket/authlist.sock: socket
 
 Если команда systemctl status указывает на ошибку, или если 
 в каталоге отсутствует файл gunicorn.sock, это означает, что 
 сокет Gunicorn не удалось создать. Проверьте журналы сокета 
 Gunicorn с помощью следующей команды:
-
-> sudo journalctl -u api-authlist.socket
+```
+sudo journalctl -u api-authlist.socket
+```
 
 Еще раз проверьте файл /etc/systemd/system/api-authlist.socket и 
 устраните любые обнаруженные проблемы, прежде чем продолжить
@@ -85,8 +81,9 @@ Gunicorn с помощью следующей команды:
 служба api-authlist.service не будет активна в связи с 
 отсутствием подключений к совету. Для проверки можно ввести 
 следующую команду:
-
-> sudo systemctl status api-authlist
+```
+sudo systemctl status api-authlist
+```
 
 >Output
 
@@ -97,8 +94,9 @@ Gunicorn с помощью следующей команды:
 >> Active: inactive (dead)
 
 Чтобы протестировать механизм активации сокета, установим соединение с сокетом через curl с помощью следующей команды:
-
-> sudo curl --unix-socket /home/flask/api/socket/authlist.sock localhost/service1/status
+```
+sudo curl --unix-socket /home/flask/api/socket/authlist.sock localhost/service1/status
+```
 
 Выводимые данные приложения должны отобразиться в терминале 
 в формате JSON. Это показывает, что Gunicorn 
@@ -106,19 +104,20 @@ Gunicorn с помощью следующей команды:
 Вы можете убедиться, что служба Gunicorn работает, 
 с помощью следующей команды:
 
->systemctl status api-authlist
+```
+systemctl status api-authlist
+```
 
 
 Настройка конфигурации Nginx
 ----------------------------
 Добавить для первого сервиса или изменить конфигурацию nginx при добавлении нового 
+```
+sudo cp ./nginx/api-config /etc/nginx/sites-available/
+sudo ln -s /etc/nginx/sites-available/api-config /etc/nginx/sites-enabled
+sudo nano /etc/nginx/sites-available/api-config
+```
 
-> sudo cp ./nginx/api-config /etc/nginx/sites-available/
-
-> sudo ln -s /etc/nginx/sites-available/api-config /etc/nginx/sites-enabled
-
-> sudo nano /etc/nginx/sites-available/api-config
- 
  изменить для первого сервиса или 
  добавить блок заменив два раза template на имя нового сервиса,
  например getauthlist
@@ -144,16 +143,20 @@ Gunicorn с помощью следующей команды:
 Примеры команды управления сервисом
 ----------------------------------
 ### Start your service
+```
 systemctl start api-authlist
 systemctl start api-authlist.socket
+```
 
 ### Obtain your services' status
+```
 systemctl status api-authlist
-
+```
 ### Stop your service
+```
 systemctl stop api-authlist
 systemctl stop api-authlist.socket
-
+```
 
 ----------------------
 Общие сведения по установке и настройки более подробно можно получить например из этих статей
