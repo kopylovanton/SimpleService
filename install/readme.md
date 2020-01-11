@@ -29,6 +29,7 @@ sudo apt install python-pip
 ```
 mkdir ~/api
 cd ~/api
+mkdir ~/socket
 python3.6 -m venv python-api-env
 ```
 --------------------------------------------------------
