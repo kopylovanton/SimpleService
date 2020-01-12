@@ -29,13 +29,19 @@ def fix_error_router(self, original_handler, e):
     return return_error(e)
 Api.error_router = fix_error_router
 
+# Import apidoc for url resources patching
+from flask_restplus.apidoc import apidoc
+# Make a global change setting the URL prefix for the swaggerui at the module level
+apidoc.url_prefix = '/'+parms['URL']
+
 # ************* Flask Api
+
 app = Flask(__name__)
 
 blueprint = Blueprint(parms['URL'], parms['SPECIFICATIONS']['SERVICE_DESCRITION']['TITLE'], url_prefix='/'+parms['URL'])
 
-from werkzeug.middleware.proxy_fix import ProxyFix
-app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
+#from werkzeug.middleware.proxy_fix import ProxyFix
+#app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
 api = Api(blueprint, version=parms['SPECIFICATIONS']['SERVICE_DESCRITION']['VERSION'], \
           title=parms['SPECIFICATIONS']['SERVICE_DESCRITION']['TITLE'], \

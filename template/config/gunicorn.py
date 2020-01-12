@@ -5,7 +5,7 @@ import yaml
 with open(r'./config/config_get.yaml') as file:
     parms= yaml.load(file, Loader=yaml.FullLoader)
 
-bind = "unix:/run/%s.sock"%(parms['URL'])
+bind = "unix:/home/flask/api/socket/%s.sock"%(parms['URL'])
 workers = 4
 chdir   = '/home/flask/api/%s/' %(parms['URL'])
 capture_output=True
