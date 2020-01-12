@@ -1,6 +1,6 @@
 # WS http path = <host>:<port>/<url>
 # port set up into nginx config file
-URL : 'template'
+URL : '<-template->'
 
 # LOG_LEVEL 20 -- production , 10 -- debug
 LOG_LEVEL : 20

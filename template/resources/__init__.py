@@ -56,7 +56,8 @@ from .db_connection_oracle import Oracle as db_connections
 
 serviseStat = WSStatistic(parms['statDepts'])
 
-ora = db_connections(parmsdb['DB_USER_NAME'], parmsdb['DB_USER_PASSWORD'][4:], \
-                     parmsdb['DB_CONN_STRING'], parmsdb['DB_ENCODING'], log, parmsdb['CURRENT_SCHEMA'] )
+# ora = db_connections(parmsdb['DB_USER_NAME'], parmsdb['DB_USER_PASSWORD'][4:], \
+#                      parmsdb['DB_CONN_STRING'], parmsdb['DB_ENCODING'], log, parmsdb['CURRENT_SCHEMA'] )
 
+ora = db_connections(parmsdb,log )
 __all__=['kstore','parms','parmsdb','log','db_connection_oracle','wsstats','service_get','serviseStat','ora']

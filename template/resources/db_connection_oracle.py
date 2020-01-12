@@ -5,15 +5,15 @@ from resources import kstore
 # ************* Oracle connection
 class Oracle(object):
 
-    def __init__(self, username, pas, conn_string, enc, logging, current_schema, enccp='utf-8'):
-        self.username = username
-        self.pwd = pas
-        self.conn_string = conn_string
-        self.encoding = enc
+    def __init__(self, parmsdb, logging, enccp='utf-8'):
+        self.username = parmsdb['DB_USER_NAME']
+        self.pwd = parmsdb['DB_USER_PASSWORD'][4:]
+        self.conn_string = parmsdb['DB_CONN_STRING']
+        self.encoding = parmsdb['DB_ENCODING']
         self.__connected = False
         self.log=logging
         self.cpage=enccp
-        self.current_schema =current_schema
+        self.current_schema =parmsdb['CURRENT_SCHEMA']
         try:
             self.db = cx_Oracle.connect(self.username, self.get_password(), self.conn_string, encoding=self.encoding)
             self.data = {'rc': 200, 'message': 'DB connected'}
@@ -95,11 +95,11 @@ class Oracle(object):
             self.data = {'rc': 200, 'message': 'DB <%s> connection UP' % (self.conn_string)}
             self.__connected = True
             return False
-            log.info('Status DB <%s> DB <%s> connection UP' % (self.conn_string))
+            self.log.info('Status DB <%s> DB <%s> connection UP' % (self.conn_string))
         except:
             self.data = {'rc': 500, 'message': 'DB <%s> connection DOWN' % (self.conn_string) }
             self.__connected = False
-            log.info('Status DB <%s> connection DOWN' % (self.conn_string))
+            self.log.info('Status DB <%s> connection DOWN' % (self.conn_string))
             return True
 
     def db_is_connect(self):

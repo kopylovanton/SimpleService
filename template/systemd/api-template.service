@@ -1,6 +1,6 @@
 [Unit]
 Description=Template api daemon
-Requires=api-template.socket
+Requires=api-<-template->.socket
 After=network.target
 
 [Service]
@@ -10,7 +10,7 @@ User=flask
 Group=www-data
 
 ## change path !!!!
-WorkingDirectory=/home/flask/api/template
+WorkingDirectory=/home/flask/api/<-template->
 ExecStart=/bin/bash run.sh
 
 [Install]

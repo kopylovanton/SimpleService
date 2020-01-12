@@ -1,9 +1,9 @@
 [Unit]
-Description=api-template socket
+Description=api-<-template-> socket
 
 [Socket]
 # Change name template -> ??? !!!
-ListenStream=/home/flask/api/socket/template.sock
+ListenStream=/home/flask/api/socket/<-template->.sock
 User=flask
 Group=www-data
 

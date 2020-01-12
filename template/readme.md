@@ -29,30 +29,9 @@
 
 
 
-Конфигурирование сервиса /config
-------------------------
+## Конфигурирование сервиса 
 
-- скопировать содержимое /template в ~/api/<service name>/
-- выполнить 
-```
-sudo chown -R flask:www-data ~/api/
-sudo chmod +x run.sh 
-```
-
-### Редактирование /config/config_get.yaml
-
-**если вы устанавливаете заранее подготовленную конфигурацию просто замените этот файле**
-
-```
-nano config/config_get.yaml
-```
-Параметр|Назначенение
---------|------------
-URL| базовый адрес для сервиса `<host>:<port>/<url>` . Замените на уникальное значение
-LOG_LEVEL| 10-Debug, 20-Info production level
-SQL_GET| запрос для GET метода сервиса. Начинается с управляющего символа `>` который указывает в yaml натации на многострочный параметр. Не удаляйте этот символ для избежании ошибок парсера. Имена возвращаемых полей и входящих параметров должно быть согласовано с секцией `SPECIFICATIONS`. Не забудьте предоставить права на вызываемые объекты Oracle для пользователя flask
-MAX_FETCH_ROWS| максимальное количество строк, которое будет обработано. Защищает от не правильных SQL
-SPECIFICATIONS| описание входящих и исходящих полей в yaml синтексисе. Сохраняйте отсутпы так как это указано в примере для избежания ошибок парсера
+скопировать содержимое /template в ~/api/<service name>/
 
 ### Редактирование /config/configdb.yaml
 
@@ -69,84 +48,36 @@ DB_USER_NAME| имя пользователя
 DB_USER_PASSWORD| пароль, после первого запуска пароль автоматически шифруется и перезаписывается в файл в шифрованном виде
 CURRENT_SCHEMA|имя пользователя владельца схемы по умолчанию 
 
-### Редактирование /config/gunicorn.yaml
-```
-nano config/gunicorn.py
-```
-параметры аппликационного сервера описаны в [документации gunicorn](http://docs.gunicorn.org/en/latest/configure.html#framework-settings).
-Можно не редактировать параметры. колчиство воркеров по умолчанию 4ре (параметр workers)
+## Сконфигурируйте или скопируйте готовую конфигурацию нового сервиса /config/config_get.yaml
+детали по параметрам конфигураиционных файлов смотри в /config/readme.md
 
-Настройка межкомпонентного взаимодействия
------------------------------------
+### Выпонить setup.sh указав в качестве параметра имя нового сервиса
 
-- переименовать файл api-<service_name>.socket и api-<service_name>.socket
-отредактировать файл. Заменить template на действительное 
-уникальное имя сервиса (например getauthlist)
-```
-sudo mv api-template.service api-<service_name>.service
-sudo mv api-template.socket api-<service_name>.socket
-```
-
-и отредактировать файлы 
-
+**имя нового сервиса должно совпадать с каталогом в котором располагаются файлы**
 
 ```
-nano api-<service_name>.service
-```
-
-```
-Description=Service1 api daemon
-Requires=api-service1.socket
-#change path !!!!
-WorkingDirectory=/home/flask/api/<service_name>
-```
-
-```
-sudo nano api-<service_name>.socket
-```
-> Change name template -> ??? !!!
-ListenStream=/home/flask/api/socket/<service_name>.sock
-
-- выполнить команды (примеры приведены для сервиса с названием <service_name>=getauthlist)
-```
-sudo cp api-getauthlist.service /etc/systemd/system
-sudo cp api-getauthlist.socket /etc/systemd/system
-sudo chmod 755 /etc/systemd/system/api-getauthlist.service
-sudo chmod 755 /etc/systemd/system/api-getauthlist.socket
-sudo systemctl daemon-reload
-sudo systemctl start api-getauthlist.socket
-sudo systemctl enable api-getauthlist.socket
+cd ~/api/<new_service_name>
+sudo chmod +x setup.sh 
+sudo ./setup.sh <new_service_name>
 ```
 
 Проверка
 --------
 ```
-sudo systemctl status api-getauthlist.socket
-sudo file /home/flask/api/socket/getauthlist.sock
+sudo systemctl status api-<new_service_name>.socket
 ```
 
->Output - /home/flask/api/socket/getauthlist.sock: socket
-
-Если команда systemctl status указывает на ошибку, или если 
-в каталоге отсутствует файл <service_name>.sock, это означает, что 
-сокет не удалось создать. Проверьте журналы сокета с помощью следующей команды:
+Если команда systemctl status указывает на ошибку проверьте журналы сокета с помощью следующей команды:
 
 ```
 sudo journalctl -u api-<service_name>.socket
 ```
 
-Еще раз проверьте файл /etc/systemd/system/api-getauthlist.socket и 
-устраните любые обнаруженные проблемы, прежде чем продолжить
+Еще раз проверьте прежде чем продолжить
 
 
-Настройка конфигурации Nginx
+Настройка конфигурации Nginx при настройке первого сервиса на этом сервере
 ----------------------------
-Скопировать **только** для первого сервиса 
-```
-sudo cp nginx/api-config /etc/nginx/sites-available/
-sudo ln -s /etc/nginx/sites-available/api-config /etc/nginx/sites-enabled
-```
-
 Изменить конфигурацию
 ```
 sudo nano /etc/nginx/sites-available/api-config
@@ -156,30 +87,36 @@ sudo nano /etc/nginx/sites-available/api-config
 # set the correct host(s) for your server
 server_name api-flask 192.168.1.38;
 ``` 
-    
- изменить для первого сервиса или 
- добавить блок заменив два раза template на имя нового сервиса,
- например getauthlist
- 
- ```
-    location /getauthlist {
-      proxy_redirect   off;
-      proxy_set_header Host $host;
-      proxy_set_header X-Real-IP $remote_addr;
-      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-      proxy_set_header X-Forwarded-Proto $scheme;
-      proxy_pass http://unix:/home/flask/api/socket/service1.sock;
-    }
-```
+
 Протестируйте конфигурацию Nginx на ошибки синтаксиса:
 ```
 sudo nginx -t
 ```
 
+Первый запуск
+-------------
+
 Если ошибок не будет найдено, перезапустите Nginx с помощью следующей команды:
 ```
 sudo systemctl restart nginx
 ```
+Запустите сервис
+```
+sudo systemctl start api-<new_service_name>
+```
+**проверьте логи на наличие ошибок**
+
+```
+cat logs/<new_service_name>_main.log
+```
+
+в браузере наберите 
+```
+<host>/<new_service_name>/swagger
+```
+
+должна отобразиться документация по сервису
+
 Примеры команды управления сервисом
 ----------------------------------
 ### Start your service
