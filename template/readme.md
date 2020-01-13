@@ -127,9 +127,12 @@ cat logs/<new_service_name>_main.log
 ----------------------------------
 ### Start your service
 ```
-systemctl start api-<new_service_name>
 systemctl start api-<new_service_name>.socket
+systemctl start api-<new_service_name> 
 ```
+
+После запуска службы socket приложение будет запущено автоматически при попытке  отправке запроса. 
+При этом лучше запускать приложение самостоятельно и проверять логи на наличие ошибок
 
 ### Obtain your services' status
 ```
@@ -140,6 +143,8 @@ systemctl status api-<new_service_name>
 systemctl stop api-<new_service_name>
 systemctl stop api-<new_service_name>.socket
 ```
+
+нужно останавливать две службы, т.к. socket автоматически запустит приложение при полчении запроса
 
 ----------------------
 Общие сведения по установке и настройки более подробно можно получить например из этих статей
