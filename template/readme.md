@@ -32,7 +32,7 @@
 
 ## Конфигурирование сервиса 
 
-скопировать содержимое /template в ~/api/<service name>/
+скопировать содержимое /template в ~/api/<new_service_name>/
 
 ### Редактирование /config/configdb.yaml
 
@@ -49,8 +49,6 @@ DB_USER_NAME| имя пользователя
 DB_USER_PASSWORD| пароль, после первого запуска пароль автоматически шифруется и перезаписывается в файл в шифрованном виде
 CURRENT_SCHEMA|имя пользователя владельца схемы по умолчанию 
 
-## Сконфигурируйте или скопируйте готовую конфигурацию нового сервиса /config/config_get.yaml
-детали по параметрам конфигураиционных файлов смотри в /config/readme.md
 
 ### Выпонить setup.sh указав в качестве параметра имя нового сервиса
 
@@ -71,7 +69,7 @@ sudo systemctl status api-<new_service_name>.socket
 Если команда systemctl status указывает на ошибку проверьте журналы сокета с помощью следующей команды:
 
 ```
-sudo journalctl -u api-<service_name>.socket
+sudo journalctl -u api-<new_service_name>.socket
 ```
 
 Еще раз проверьте прежде чем продолжить
@@ -116,24 +114,30 @@ cat logs/<new_service_name>_main.log
 <host>/<new_service_name>/swagger
 ```
 
-должна отобразиться документация по сервису
+**Должна отобразиться документация по шаблонному сервису на основе запроса `select from dual`**
+
+Далее необходимо сконфигурировать SQL запрос нового сервиса
+
+## Сконфигурируйте или скопируйте готовую конфигурацию нового сервиса /config/config_get.yaml
+
+детали по параметрам конфигураиционных файлов смотри в /config/readme.md
 
 Примеры команды управления сервисом
 ----------------------------------
 ### Start your service
 ```
-systemctl start api-authlist
-systemctl start api-authlist.socket
+systemctl start api-<new_service_name>
+systemctl start api-<new_service_name>.socket
 ```
 
 ### Obtain your services' status
 ```
-systemctl status api-authlist
+systemctl status api-<new_service_name>
 ```
 ### Stop your service
 ```
-systemctl stop api-authlist
-systemctl stop api-authlist.socket
+systemctl stop api-<new_service_name>
+systemctl stop api-<new_service_name>.socket
 ```
 
 ----------------------
