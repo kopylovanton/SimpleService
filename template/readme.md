@@ -120,7 +120,8 @@ cat logs/<new_service_name>_main.log
 
 ## Сконфигурируйте или скопируйте готовую конфигурацию нового сервиса /config/config_get.yaml
 
-детали по параметрам конфигураиционных файлов смотри в /config/readme.md
+- детали по параметрам конфигураиционных файлов смотри в [/template/config](https://github.com/kopylovanton/SimpleService/tree/master/template/config)
+- конфигурация готовых сервисов [/services](https://github.com/kopylovanton/SimpleService/tree/master/services)
 
 Примеры команды управления сервисом
 ----------------------------------
