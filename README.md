@@ -16,10 +16,10 @@ Compatibility
 =============
 
 Проект построен на open sourse стеке: 
-- Nginx для проксирования запросов
-- Gunicorn в качестве апликационного сервиса
-- Flask и Flask-Restplus для описания формата запроса
-- Cx-Oracle для подключения к базе данных
+- [Nginx](https://nginx.org/ru/) для проксирования запросов
+- [Gunicorn](https://gunicorn.org/#docs) в качестве апликационного сервиса
+- [Flask](http://flask.palletsprojects.com/en/1.1.x/) и [Flask-Restplus](https://flask-restplus.readthedocs.io/en/stable/) для описания формата запроса
+- [Cx-Oracle](https://oracle.github.io/python-cx_Oracle/) для подключения к базе данных
 
 
 Technical Requirements
