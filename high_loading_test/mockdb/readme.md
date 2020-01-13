@@ -118,13 +118,12 @@ create function for bwx
 
 
 ```
-create or replace NONEDITIONABLE FUNCTION SLEEP 
+create or replace FUNCTION SLEEP 
 (from_time in number,to_time number ) 
 
 RETURN VARCHAR2 AS 
 
 k  number;
-
 
 BEGIN
   
