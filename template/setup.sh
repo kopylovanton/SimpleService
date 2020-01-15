@@ -2,7 +2,7 @@
 # $0 is the script name, $1 id the first ARG
 if [ -z "$1" ]
   then
-    echo "No serviceName argument supplied"
+    echo "No New Service Name argument supplied -- ./setup.sh <newServiceName>"
 fi
 
 serviceName="$1"
@@ -10,7 +10,7 @@ source ~/api/python-api-env/bin/activate
 cd /home/flask/api/$serviceName
 pwd
 cwd=$(pwd)
-python3 $cwd/resources/setup_new_service.py --newName $serviceName --tempName "<-template->" || { echo '!!!Finish with ERROR: checks and rename failed' ; exit 1; }
+python3 $cwd/resources/setup_new_service.py --newName $serviceName --tempName "+-template-+" || { echo '!!!Finish with ERROR: checks and rename failed' ; exit 1; }
 chown -R flask:www-data ~/api/
 chmod +x run.sh
 cp systemd/api-template.service systemd/api-$serviceName.service || { echo '!!!Finish with ERROR: service move failed' ; exit 1; }

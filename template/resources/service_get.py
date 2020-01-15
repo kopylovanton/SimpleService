@@ -1,9 +1,35 @@
 # ************* Import
 from flask import Flask,request, Blueprint, current_app, url_for, jsonify
 from flask_restplus import Api, Resource, fields, reqparse
-from resources import parms, log, ora, serviseStat
+from .db_connection_oracle import  Oracle as db_connections
+from .wsstats import WSStatistic
+from .__about__ import  __version__
 import time
 import sys
+import io
+import yaml
+import logging
+
+cpage='utf-8'
+
+# ************* Load Parms
+with io.open(r'config/config_get.yaml', encoding = cpage) as file:
+    parms = yaml.load(file, Loader=yaml.FullLoader)
+
+for p in ['URL', 'LOG_LEVEL', 'SQL_GET', 'MAX_FETCH_ROWS', 'SPECIFICATIONS']:
+    assert len(str(parms[p])) > 1, '/config/config_get.yaml -> %s does not defined' % p
+
+
+# ************* Logging
+logFormat = '%(asctime)s =%(levelname)s= [%(name)s-%(lineno)d] - %(message)s'
+#loghandler = TimedRotatingFileHandler("logfile",when="midnight")
+logging.basicConfig(format=logFormat, level=logging.ERROR)
+
+log = logging.getLogger(parms['URL'])
+log.setLevel(parms['LOG_LEVEL'])
+log.info('Start process worker, version: %s', __version__)
+
+ora = db_connections(log)
 
 # Ensure the specs endpoint is not treated as an "external" resource.
 @property
@@ -16,7 +42,7 @@ Api.specs_url = fix_specs_url
 # https://flask-restplus.readthedocs.io/en/stable/_modules/flask_restplus/api.html#Api.handle_error
 def return_error(e):
     # I return a custom JSON object here. But do what you want.
-    return(jsonify({"errors": [{"status": 500, "object": str(e.__repr__) }] }))
+    return(jsonify({'rc': 404, 'message': 'Can not find resources: ' + str(e.__repr__)}))
 
 def fix_error_router(self, original_handler, e):
     exc_info = sys.exc_info()
@@ -35,6 +61,8 @@ from flask_restplus.apidoc import apidoc
 apidoc.url_prefix = '/'+parms['URL']
 
 # ************* Flask Api
+
+serviseStat = WSStatistic(parms['statDepts'])
 
 app = Flask(__name__)
 

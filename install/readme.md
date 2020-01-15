@@ -60,8 +60,20 @@ sudo ldconfig
 sudo nano /etc/profile.d/oracle.sh && sudo chmod o+r /etc/profile.d/oracle.sh
 export ORACLE_HOME=/usr/lib/oracle/19.5/client64`
 export PATH=$PATH:$ORACLE_HOME/bin`
+```
 
+- выполнить команды
+```
 sudo ln -s /usr/include/oracle/19.5/client $ORACLE_HOME/include
+sudo mkdir  -p /etc/orcale
+```
+
+- создать файл, добавить одну строку и сохранить
+
+```
+sudo nano /etc/orcale/sqlnet.ora
+
+SQLNET.OUTBOUND_CONNECT_TIMEOUT = 5000 ms
 ```
 
 --------------------------------------------------------
