@@ -13,7 +13,7 @@ assert dirpath.find(args.newName) > 0, 'Current dir does not equal service name 
 
 
 def doChange(p):
-    sp = ['.py', '.sh', '.temp', '.log', 'cache', '.git', '.idea']
+    sp = ['.py', '.sh', '.temp', '.log', 'cache', '.git', '.idea','.md']
     if p.find('/home/flask') < 0:
         return False
     for v in sp:
@@ -21,20 +21,20 @@ def doChange(p):
             return False
     return True
 
-
+cntRep = 0
 for dname, dirs, files in os.walk(dirpath):
     for fname in files:
         fpath = os.path.join(dname, fname)
         if doChange(fpath):
-            print('>>> prcess file:', fpath)
             with open(fpath) as f:
                 s = f.read()
             s = s.replace(args.tempName, args.newName)
-            assert s.count(
-                args.newName) > 3, 'Error replace template service name - try copy new template configuration an restart setup.sh process'
+            cntRep += s.count(args.newName)
+            print('>>> prcess file:', fpath, 'replaced %s template' % str(s.count(args.newName)))
             with open(fpath, "w") as f:
                 f.write(s)
-
+assert cntRep > 3, 'Error replace template service name - try copy new template configuration' \
+                                  ' an restart setup.sh process'
 print('Context change complete')
 
 # Nginx

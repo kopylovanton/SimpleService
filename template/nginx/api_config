@@ -8,7 +8,11 @@ server {
     # set the correct host(s) for your server
     server_name api-flask 192.168.1.38;
 
-    keepalive_timeout 5;
+    keepalive_timeout 15;
+    send_timeout 15;
+    resolver_timeout 3;
+    client_header_timeout  3;
+    client_body_timeout 3;
 
     # path for static files
     root /path/to/app/current/public;
