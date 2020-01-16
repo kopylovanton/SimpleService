@@ -10,6 +10,7 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
+
 # ************* Oracle connection
 class Oracle(object):
 
@@ -18,10 +19,11 @@ class Oracle(object):
         self.__connected = False
         self.log = logging
 
-        self.parmsdb=self.__load_parms();
-        for p in ['DB_CONN_STRING', 'DB_USER_NAME', 'DB_USER_PASSWORD','DB_ENCODING','CURRENT_SCHEMA','DB_EXECUTE_TIMEOUT']:
+        self.parmsdb = self.__load_parms();
+        for p in ['DB_CONN_STRING', 'DB_USER_NAME', 'DB_USER_PASSWORD', 'DB_ENCODING', 'CURRENT_SCHEMA',
+                  'DB_EXECUTE_TIMEOUT']:
             assert len(str(self.parmsdb[p])) > 1, '/config/configdb.yaml -> %s does not defined' % p
-        self.kstore=self.__kstore()
+        self.kstore = self.__kstore()
 
         self.username = self.parmsdb['DB_USER_NAME']
         self.pwd = self.parmsdb['DB_USER_PASSWORD'][4:]
@@ -29,7 +31,6 @@ class Oracle(object):
         self.encoding = self.parmsdb['DB_ENCODING']
         self.current_schema = self.parmsdb['CURRENT_SCHEMA']
         self.callTimeout = self.parmsdb['DB_EXECUTE_TIMEOUT']
-
 
         try:
             self.db = cx_Oracle.connect(self.username, self.get_password(), self.conn_string, encoding=self.encoding)
@@ -40,12 +41,12 @@ class Oracle(object):
             self.log.info('DB <%s> connection started' % (self.conn_string))
         except cx_Oracle.DatabaseError as e:
             errorObj, = e.args
-            self.log.error('DB <%s> have not connected.  Oracle error message: ' % (self.conn_string)) + str(
-                errorObj.message)
-            raise
+            self.log.error('DB <%s> have not connected.  Oracle error message: ' % (self.conn_string) + str(
+                errorObj.message))
 
     def __del__(self):
         self.disconnect()
+
     def get_password(self):
         return self.kstore.decrypt(self.pwd.encode(self.cpage)).decode(self.cpage)
 
@@ -131,6 +132,7 @@ class Oracle(object):
         """ Check DB status """
         return (not self.__db_not_connect())
         # ************* check DB pass
+
     def __kstore(self):
         salt = str.encode(os.uname()[4] + self.parmsdb['DB_CONN_STRING'])
         kdf = PBKDF2HMAC(
@@ -153,10 +155,9 @@ class Oracle(object):
             key = base64.urlsafe_b64encode(kdf.derive(self.parmsdb['SK'].encode(self.cpage)))
             kstore = Fernet(key)
         return kstore
+
     def __load_parms(self):
         # ************* Load Parms
         with io.open(r'config/configdb.yaml', encoding=self.cpage) as file:
             parmsdb = yaml.load(file, Loader=yaml.FullLoader)
         return parmsdb
-
-
