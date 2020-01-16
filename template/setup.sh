@@ -11,6 +11,10 @@ cd /home/flask/api/$serviceName
 pwd
 cwd=$(pwd)
 python3 $cwd/resources/setup_new_service.py --newName $serviceName --tempName "+-template-+" || { echo '!!!Finish with ERROR: checks and rename failed' ; exit 1; }
+mkdir -p /home/flask/api/socket
+mkdir -p /home/flask/api/nginx
+echo "{'rc': 500, 'message': 'Internal server error'}" > /home/flask/api/nginx/500.json
+echo "{'rc': 404, 'message': 'Can not find resources'}" > /home/flask/api/nginx/404.json
 chown -R flask:www-data ~/api/
 chmod +x run.sh
 cp systemd/api-template.service systemd/api-$serviceName.service || { echo '!!!Finish with ERROR: service move failed' ; exit 1; }
