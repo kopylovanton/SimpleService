@@ -1,14 +1,16 @@
 # ************* Import
-from flask import Flask,request, Blueprint, current_app, url_for, jsonify
-from flask_restplus import Api, Resource, fields, reqparse
-from .db_connection_oracle import  Oracle as db_connections
-from .wsstats import WSStatistic
-from .__about__ import  __version__
-import time
-import sys
 import io
-import yaml
 import logging
+import sys
+import time
+
+import yaml
+from flask import Flask, request, Blueprint, current_app, url_for, jsonify
+from flask_restplus import Api, Resource, fields, reqparse
+
+from .__about__ import __version__
+from .db_connection_oracle import Oracle as db_connections
+from .wsstats import WSStatistic
 
 cpage='utf-8'
 
