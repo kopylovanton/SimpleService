@@ -5,9 +5,9 @@ workers = 5
 timeout = 20
 graceful_timeout = 20
 
-
 # ************* Load Parms
 import yaml
+
 with open(r'./config/config_get.yaml') as file:
     parms = yaml.load(file, Loader=yaml.FullLoader)
 
