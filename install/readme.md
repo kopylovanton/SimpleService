@@ -36,8 +36,8 @@ python3.6 -m venv python-api-env
 Установить пакеты python перечисленные в requirements.txt 
 ```
 source ~/api/python-api-env/bin/activate
-(python-api-env) $ sudo -H pip install wheel
-(python-api-env) $ sudo -H pip install -r requirements.txt
+(python-api-env) $ sudo -H pip3 install wheel
+(python-api-env) $ sudo -H pip3 install -r requirements.txt
 ```
 --------------------------------------------------------
 Установить клиент Oracle
