@@ -11,6 +11,7 @@ from flask_restplus import Api, Resource, fields, reqparse
 from .__about__ import __version__
 from .db_connection_oracle import Oracle as db_connections
 from .wsstats import WSStatistic
+from .parmsAssertions import pAssertion
 
 cpage = 'utf-8'
 
@@ -21,6 +22,9 @@ with io.open(r'config/config_get.yaml', encoding=cpage) as file:
 for p in ['URL', 'LOG_LEVEL', 'SQL_GET', 'MAX_FETCH_ROWS', 'SPECIFICATIONS']:
     assert len(str(parms[p])) > 1, '/config/config_get.yaml -> %s does not defined' % p
 
+# Base API URL <host>:<port>/<URL>/<VERSION>
+apiurl = '/' + parms['URL']+ '/' + parms['SPECIFICATIONS']['SERVICE_DESCRITION']['VERSION']
+
 # ************* Logging
 logFormat = '%(asctime)s =%(levelname)s= [%(name)s-%(lineno)d] - %(message)s'
 # loghandler = TimedRotatingFileHandler("logfile",when="midnight")
@@ -28,19 +32,19 @@ logging.basicConfig(format=logFormat, level=logging.ERROR)
 
 log = logging.getLogger(parms['URL'])
 log.setLevel(parms['LOG_LEVEL'])
-log.info('Start process worker, version: %s', __version__)
+log.info('Start process worker at URL = <host>:<port>/%s/%s , version: %s  ' %
+         (parms['URL'],parms['SPECIFICATIONS']['SERVICE_DESCRITION']['VERSION'] , __version__))
 
+# Open Oracle connections
 ora = db_connections(log)
-
+# Load assertions
+pAssertion = pAssertion(log)
 
 # Ensure the specs endpoint is not treated as an "external" resource.
 @property
 def fix_specs_url(self):
     return url_for(self.endpoint('specs'), _external=False)
-
-
 Api.specs_url = fix_specs_url
-
 
 # Ensure exceptions are picked up, API responses are produced as expected, and
 # exceptions are written to the log. Logging code taken from flask_restplus error handler:
@@ -48,7 +52,6 @@ Api.specs_url = fix_specs_url
 def return_error(e):
     # I return a custom JSON object here. But do what you want.
     return (jsonify({'rc': 404, 'message': 'Can not find resources: ' + str(e.__repr__)}))
-
 
 def fix_error_router(self, original_handler, e):
     exc_info = sys.exc_info()
@@ -60,14 +63,13 @@ def fix_error_router(self, original_handler, e):
         current_app.logger.error(str(e))
     return return_error(e)
 
-
 Api.error_router = fix_error_router
 
 # Import apidoc for url resources patching
 from flask_restplus.apidoc import apidoc
 
 # Make a global change setting the URL prefix for the swaggerui at the module level
-apidoc.url_prefix = '/' + parms['URL']
+apidoc.url_prefix = apiurl
 
 # ************* Flask Api
 
@@ -76,7 +78,7 @@ serviseStat = WSStatistic(parms['statDepts'])
 app = Flask(__name__)
 
 blueprint = Blueprint(parms['URL'], parms['SPECIFICATIONS']['SERVICE_DESCRITION']['TITLE'],
-                      url_prefix='/' + parms['URL'])
+                      url_prefix=apiurl)
 
 # from werkzeug.middleware.proxy_fix import ProxyFix
 # app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
@@ -84,7 +86,7 @@ blueprint = Blueprint(parms['URL'], parms['SPECIFICATIONS']['SERVICE_DESCRITION'
 api = Api(blueprint, version=parms['SPECIFICATIONS']['SERVICE_DESCRITION']['VERSION'], \
           title=parms['SPECIFICATIONS']['SERVICE_DESCRITION']['TITLE'], \
           doc='/swagger',
-          description=parms['SPECIFICATIONS']['SERVICE_DESCRITION']['DESCRITION'],
+          description=parms['SPECIFICATIONS']['SERVICE_DESCRITION']['DESCRITION']  ,
           default=parms['URL'], default_label='Specification')
 app.register_blueprint(blueprint)
 
@@ -118,7 +120,9 @@ get_responce_model = api.model(parms['URL'], {
 class stableApi(Resource):
     """ Base api for get, put, udate operaions """
 
-    @api.doc(description=parms['SPECIFICATIONS']['GET_DESCRITION']['DESCRITION'],
+    @api.doc(description=parms['SPECIFICATIONS']['GET_DESCRITION']['DESCRITION']+
+                      '\n Assertions list: %s' % pAssertion.parms_assertions.get('GET','NONE') +
+                      '\n Assertions format: %s' % pAssertion.formats_assertions.get('GET','NONE'),
              responses={500: 'Some problem with DB or SQL'},
              params=get_input_required_fields)
     @api.marshal_with(get_responce_model)
@@ -127,24 +131,27 @@ class stableApi(Resource):
         start_time = time.time()
         args = get_input_parser.parse_args()
         ipadr = request.remote_addr
-        log.info('Message UID:%s, from SYSTEM <%s>, IP <%s> , started with input parameters: %s' % (
-        uid, source_system, ipadr, str(args)))
-        ora.execute(parms['SQL_GET'], bindvars=args, uid=uid)
-        buf = ora.data
+        log.info('Message UID:%s, from SYSTEM <%s>, IP <%s> , started with input parameters: %s' %
+                 (uid, source_system, ipadr, str(args)))
+        # Assertion
+        adict = args.copy()
+        adict['source_system']=source_system
+        buf = pAssertion.chekAssertions(adict,'GET',uid)
+        if buf['rc'] == 200:
+            ora.execute(parms['SQL_GET'], bindvars=args, uid=uid,fetch=True,fetchcount=parms['MAX_FETCH_ROWS'])
+            buf = ora.data
+        else:
+            buf['records'] = []
+
         buf['input_parms'] = args
         buf['source_system'] = source_system
         buf['uid'] = uid
-        if buf['rc'] == 200:
-            rows = ora.cursor.fetchmany(parms['MAX_FETCH_ROWS'])
-            columns = [i[0].lower() for i in ora.cursor.description]
-            ora.cursor.close()
-            buf['records'] = [dict(zip(columns, row)) for row in rows]
-            dtime = round(time.time() - start_time, 4)
+
+        dtime = round(time.time() - start_time, 4)
+        if buf['rc']==200:
             serviseStat.putGetItem(dtime)
         else:
             serviseStat.putErrItem()
-            buf['records'] = []
-            dtime = round(time.time() - start_time, 4)
         log.info("Message UID:%s, processed in --- %s seconds ---" % (uid, dtime))
         return buf, buf['rc']
     # except:
