@@ -28,7 +28,7 @@ class pAssertion(object):
         passert = (p for p in parms if p in self.parms_assertions[req_type])
         for p in passert:
             if parms[p] not in self.parms_assertions[req_type][p]:
-                return {'rc' : 500, 'message' :'Inward parameter %s does not in allowed list' % p}
+                return {'rc' : 412, 'message' :'Inward parameter %s does not in allowed list' % p}
 
         # Formats assertions
         passert = (p for p in parms if p in self.formats_assertions[req_type])
@@ -38,15 +38,15 @@ class pAssertion(object):
                 try:
                     d=datetime.strptime( parms[p], fa[5:])
                 except:
-                    resp = {'rc': 500, 'message': 'Inward parameter %s does not pass format assertion %s' % (p,fa)}
+                    resp = {'rc': 412, 'message': 'Inward parameter %s does not pass format assertion %s' % (p,fa)}
             elif fa.find('re=') == 0:
                 try:
                     if re.fullmatch( fa[3:] , parms[p]) == None:
-                        resp = {'rc': 500,
+                        resp = {'rc': 412,
                                 'message': 'Inward parameter %s does not pass format assertion %s' % (p, fa)}
                 except:
-                    resp = {'rc': 500, 'message': 'Inward parameter %s does not pass format assertion %s' % (p,fa)}
-        if resp['rc']==500:
+                    resp = {'rc': 412, 'message': 'Inward parameter %s does not pass format assertion %s' % (p,fa)}
+        if resp['rc']==412:
             self.log.warning('Assertion error for UID %s, %s' % (uid,resp['message']))
         return resp
 

@@ -42,7 +42,8 @@ class stableApi(Resource):
     @simple_app.api.doc(description=simple_app.parms['SPECIFICATIONS']['GET_DESCRITION']['DESCRITION']+
                       '\n Assertions list: %s' % pAssertion.parms_assertions.get('GET','NONE') +
                       '\n Assertions format: %s' % pAssertion.formats_assertions.get('GET','NONE'),
-             responses={500: 'Some problem with DB or SQL'},
+             responses={500: 'Some problem with DB or SQL',
+                        412: 'Failed assertion for inward parameters'},
              params=simple_app.get_input_required_fields)
     @simple_app.api.marshal_with(simple_app.get_responce_model)
     def get(self, source_system, uid):
