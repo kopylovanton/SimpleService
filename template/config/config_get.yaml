@@ -2,7 +2,7 @@
 # port set up into nginx config file
 URL : '+-template-+'
 
-# WS status check http path <host>:<port>/<url>/status
+# WS status check http path <host>:<port>/<url>/<VERISON>/status
 statDepts: 5 # statistics depth in minutes
 
 # LOG_LEVEL 20 -- production , 10 -- debug
