@@ -11,6 +11,8 @@ from .db_connection_oracle import Oracle as db_connections
 from .wsstats import WSStatistic
 from .parmsAssertions import pAssertion
 from .simpleapi_sync import SimpeSyncApi
+from .cust_preprocess import inward_parms_preprocessing
+from .cust_postprocess import outward_parms_preprocessing
 
 # ************* Flask Api
 simple_app = SimpeSyncApi()
@@ -55,8 +57,10 @@ class stableApi(Resource):
         adict['source_system']=source_system
         buf = pAssertion.chekAssertions(adict,'GET',uid)
         if buf['rc'] == 200:
+            args=inward_parms_preprocessing(args,log)
             ora.execute(simple_app.parms['SQL_GET'], bindvars=args, uid=uid,fetch=True,fetchcount=simple_app.parms['MAX_FETCH_ROWS'])
             buf = ora.data
+            buf['records']=outward_parms_preprocessing(buf['records'],log)
         else:
             buf['records'] = []
 
