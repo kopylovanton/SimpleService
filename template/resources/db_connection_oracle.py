@@ -83,7 +83,7 @@ class Oracle(object):
         except:
             pass
 
-    def execute(self, sql, bindvars={}, commit=False, uid='unknown'):
+    def execute(self, sql, bindvars={}, commit=False, uid='unknown', fetch=True, fetchcount = 1000):
         """
         Execute whatever SQL statements are passed to the method;
         commit if specified. Do not specify fetchall() in here as
@@ -99,6 +99,11 @@ class Oracle(object):
                 self.cursor = self.db.cursor()
                 self.cursor.execute(sql, bindvars)
                 self.data = {'rc': 200, 'message': 'ok'}
+                if fetch:
+                    rows = self.cursor.fetchmany(fetchcount)
+                    columns = [i[0].lower() for i in self.cursor.description]
+                    self.data['records'] = [dict(zip(columns, row)) for row in rows]
+                self.cursor.close()
                 # Only commit if it-s necessary.
                 if commit:
                     self.db.commit()

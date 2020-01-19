@@ -1,19 +1,23 @@
-# WS http path = <host>:<port>/<url>
+# WS http path = <host>:<port>/<URL>/<VERSION>/<source_system>/<uid>?...
 # port set up into nginx config file
 URL : '+-template-+'
+
+# WS status check http path <host>:<port>/<url>/<VERISON>/status
+statDepts: 5 # statistics depth in minutes
 
 # LOG_LEVEL 20 -- production , 10 -- debug
 LOG_LEVEL : 20
 
 # get data SQL
 SQL_GET : >
-  SELECT 'Hello1' as parm1, 'World1' as parm2 FROM DUAL
-  where
-    1 = :inp1
-  union all
-  SELECT 'Hello2' as parm1, 'World2' as parm2 FROM DUAL
-  where
-    2 = :inp2
+    SELECT 'Hello1' as parm1, 'World1' as parm2 FROM DUAL
+        where sysdate >= to_date(:inp1,'YYYYMMDD')
+      union all
+    SELECT 'Hello2' as parm1, 'World2' as parm2 FROM DUAL
+        where 4 > :inp2
+      union all
+    SELECT 'Hello3' as parm1, 'World3' as parm2 FROM DUAL
+        where 3 > :inp3 and 1=1
 
 # Max rows for result. It depends on server's memory size.
 MAX_FETCH_ROWS : 1000
@@ -23,15 +27,36 @@ SPECIFICATIONS:
   SERVICE_DESCRITION:
     TITLE: "Processing system API"
     DESCRITION: "Template get service "
-    VERSION: "2020_01_01"
+    VERSION: "V1"
   GET_DESCRITION:
     DESCRITION: "Get couple rows from dual"
     INPUT_REQUIRED_FIELDS:
-      inp1: "inp1 descr - Set '1' for successful get "
-      inp2: "inp2 descr - Set '2' for successful get "
+      inp1: "inp1 descr - date in YYYYMMDD format "
+      inp2: "inp2 descr - Set '1-3' for successful get "
+      inp3: "inp2 descr - Set '1-2' for successful get "
     RESPONCE_FIELDS:
       parm1: "parm1 descr"
       parm2: "parm2 descr"
 
-# WS status check http path <host>:<port>/<url>/status
-statDepts: 5 # statistics depth in minutes
+# Assertions [OPTIONAL]
+# if assertions does not exists - all values is allowed
+
+#allowed only if in list - can be removed
+ASSERTIONS_PARMS:
+  GET: # REST method name
+    source_system:
+      - 'system1'
+      - 'system2'
+      - 'system3'
+    inp2: ['1', '2' , '3', '2.5']  # List format 1
+    inp3: # List format 2 (it's the same)
+      - '1'
+      - '2'
+
+
+# check formats - can be removed
+ASSERTIONS_FORMATS:
+  GET:
+    inp1: 'date=%Y%m%d'  # check format by datetime.strptime() functions ---- https://docs.python.org/3/library/datetime.html#strftime-strptime-behavior
+    inp2: 're=[0-9,\.]+' # check format by re.fullmatch functions ---- https://docs.python.org/3/library/re.html#module-re
+    inp3: 're=[0-9]+'
