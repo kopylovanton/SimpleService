@@ -5,6 +5,9 @@ URL : 'getAuthList'
 # LOG_LEVEL 20 -- production , 10 -- debug
 LOG_LEVEL : 20
 
+# WS status check http path <host>:<port>/getAuthlist/status
+statDepts: 5 # statistics depth in minutes
+
 # get data SQL
 SQL_GET : >
   select
@@ -53,10 +56,11 @@ MAX_FETCH_ROWS : 1000
 
 # WS documentation http path <host>:<port>/getAuthlist/swagger and <host>:<port>/getAuthlist/swagger.json
 SPECIFICATIONS:
+  VERSION: "V1"
   SERVICE_DESCRITION:
     TITLE: "WAY4 CARDS API"
     DESCRITION: "Get active auth transaction list for client's cards by main contract number"
-    VERSION: "2020_01_12"
+    RELEASE: "2020_01_21"
   GET_DESCRITION:
     DESCRITION: "Get active auth transaction list for client's cards by main contract number"
     INPUT_REQUIRED_FIELDS:
@@ -88,5 +92,14 @@ SPECIFICATIONS:
       transCondAttr: "tag; format transaction attributes (chip, attended , etc)"
       contractFor: "card number masked 4***4"
 
-# WS status check http path <host>:<port>/getAuthlist/status
-statDepts: 5 # statistics depth in minutes
+#allowed only if in list - can be removed
+ASSERTIONS_PARMS:
+  GET: # REST method name
+    source_system:
+      - 'DBO'
+      - 'DIASOFT'
+      - 'ESB'
+
+ASSERTIONS_FORMATS:
+  GET:
+    inp2: 're=[0-9,a-z,A-Z]+'

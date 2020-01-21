@@ -24,8 +24,8 @@ logging.basicConfig(format=logFormat, level=logging.ERROR)
 
 log = logging.getLogger(simple_app.parms['URL'])
 log.setLevel(simple_app.parms['LOG_LEVEL'])
-log.info('Start process worker at URL = <host>:<port>/%s/%s , version: %s  ' %
-         (simple_app.parms['URL'],simple_app.parms['SPECIFICATIONS']['SERVICE_DESCRITION']['VERSION'] , __version__))
+log.info('Start process worker at URL = <host>:<port>/%s , version: %s  ' %
+         (simple_app.apiurl , __version__))
 
 # Open Oracle connections
 ora = db_connections(log)
@@ -58,7 +58,7 @@ class stableApi(Resource):
         adict['source_system']=source_system
         buf = pAssertion.chekAssertions(adict,'GET',uid)
         if buf['rc'] == 200:
-            args=inward_parms_preprocessing(args,log,simple_app.parm)
+            args=inward_parms_preprocessing(args,log,simple_app.parms)
             ora.execute(simple_app.parms['SQL_GET'], bindvars=args, uid=uid,fetch=True,fetchcount=simple_app.parms['MAX_FETCH_ROWS'])
             buf = ora.data
             buf['records']=outward_parms_preprocessing(buf['records'],log,simple_app.parms)

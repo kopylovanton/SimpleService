@@ -37,7 +37,7 @@ class SimpeSyncApi(object):
 
         self.get_input_required_fields = self.parms['SPECIFICATIONS']['GET_DESCRITION']['INPUT_REQUIRED_FIELDS']
         self.get_responce_fields = self.parms['SPECIFICATIONS']['GET_DESCRITION']['RESPONCE_FIELDS']
-        self.apiurl = '/' + self.parms['URL']+ '/' + self.parms['SPECIFICATIONS']['SERVICE_DESCRITION']['VERSION']
+        self.apiurl = '/' + self.parms['URL']+ '/' + self.parms['SPECIFICATIONS']['VERSION']
 
         from flask_restplus.apidoc import apidoc
         apidoc.url_prefix = self.apiurl
@@ -59,7 +59,7 @@ class SimpeSyncApi(object):
             p = yaml.load(file, Loader=yaml.FullLoader)
         return p
     def __appyAssert(self):
-        for p in ['URL', 'LOG_LEVEL', 'SQL_GET', 'MAX_FETCH_ROWS', 'SPECIFICATIONS','VERSION','RELEASE']:
+        for p in ['URL', 'LOG_LEVEL', 'SQL_GET', 'MAX_FETCH_ROWS', 'SPECIFICATIONS']:
             assert len(str(self.parms[p])) > 1, '/config/config_get.yaml -> %s does not defined' % p
     def simpleApi(self):
 

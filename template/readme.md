@@ -36,7 +36,7 @@
 
 ### Редактирование /config/configdb.yaml
 
-```
+```shell script
 nano config/configdb.yaml
 ```
 параметры подключения к базе данных. Необходимо указать актуальные параметры
@@ -54,7 +54,7 @@ CURRENT_SCHEMA|имя пользователя владельца схемы п�
 
 **имя нового сервиса должно совпадать с каталогом в котором располагаются файлы**
 
-```
+```shell script
 cd ~/api/<new_service_name>
 sudo chmod +x setup.sh 
 sudo ./setup.sh <new_service_name>
@@ -62,13 +62,13 @@ sudo ./setup.sh <new_service_name>
 
 Проверка
 --------
-```
+```shell script
 sudo systemctl status api-<new_service_name>.socket
 ```
 
 Если команда systemctl status указывает на ошибку проверьте журналы сокета с помощью следующей команды:
 
-```
+```shell script
 sudo journalctl -u api-<new_service_name>.socket
 ```
 
@@ -78,17 +78,17 @@ sudo journalctl -u api-<new_service_name>.socket
 Настройка конфигурации Nginx при настройке первого сервиса на этом сервере
 ----------------------------
 Изменить конфигурацию
-```
+```shell script
 sudo nano /etc/nginx/sites-available/api-config
 ```
 укзать корректное имя сервера и/или ip адрес
-```
+```shell script
 # set the correct host(s) for your server
 server_name api-flask 192.168.1.38;
 ``` 
 
 Протестируйте конфигурацию Nginx на ошибки синтаксиса:
-```
+```shell script
 sudo nginx -t
 ```
 
@@ -96,16 +96,16 @@ sudo nginx -t
 -------------
 
 Если ошибок не будет найдено, перезапустите Nginx с помощью следующей команды:
-```
+```shell script
 sudo systemctl restart nginx
 ```
 Запустите сервис
-```
+```shell script
 sudo systemctl start api-<new_service_name>
 ```
 **проверьте логи на наличие ошибок**
 
-```
+```shell script
 cat logs/<new_service_name>_main.log
 ```
 
@@ -126,7 +126,7 @@ cat logs/<new_service_name>_main.log
 Примеры команды управления сервисом
 ----------------------------------
 ### Start your service
-```
+```shell script
 systemctl start api-<new_service_name>.socket
 systemctl start api-<new_service_name> 
 ```
@@ -135,11 +135,11 @@ systemctl start api-<new_service_name>
 При этом лучше запускать приложение самостоятельно и проверять логи на наличие ошибок
 
 ### Obtain your services' status
-```
+```shell script
 systemctl status api-<new_service_name>
 ```
 ### Stop your service
-```
+```shell script
 systemctl stop api-<new_service_name>
 systemctl stop api-<new_service_name>.socket
 ```

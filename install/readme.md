@@ -10,13 +10,13 @@
 Последовательность установки. 
 ============================
 Создать системного пользователя flask
-```
+```shell script
 $ adduser flask
 $ usermod -aG sudo flask
 ```
 --------------------------------------------------------
 Установить python 3.6
-```
+```shell script
 su flask
 cd ~/
 sudo apt update
@@ -26,7 +26,7 @@ sudo apt install python-pip
 ```
 --------------------------------------------------------
 Настроить окружение python для сервисов 
-```
+```shell script
 mkdir ~/api
 cd ~/api
 mkdir ~/socket
@@ -34,7 +34,7 @@ python3.6 -m venv python-api-env
 ```
 --------------------------------------------------------
 Установить пакеты python перечисленные в requirements.txt 
-```
+```shell script
 source ~/api/python-api-env/bin/activate
 (python-api-env) $ sudo -H pip3 install wheel
 (python-api-env) $ sudo -H pip3 install -r requirements.txt
@@ -47,7 +47,7 @@ source ~/api/python-api-env/bin/activate
 и **[help.ubuntu.com](https://help.ubuntu.com/community/Oracle%20Instant%20Client])**
 
 - [загрузить на сервер Basic клиент](https://www.oracle.com/database/technologies/instant-client/linux-x86-64-downloads.html)
-```
+```shell script
 sudo apt-get install alien
 sudo alien -i oracle-instantclient19.5-basic-19.5.0.0.0-1.x86_64.rpm 
 sudo apt-get install libaio1
@@ -56,21 +56,21 @@ sudo ldconfig
 ```
 
 - создать файл, добавить в него две записи и сохранить
-```
+```shell script
 sudo nano /etc/profile.d/oracle.sh && sudo chmod o+r /etc/profile.d/oracle.sh
 export ORACLE_HOME=/usr/lib/oracle/19.5/client64`
 export PATH=$PATH:$ORACLE_HOME/bin`
 ```
 
 - выполнить команды
-```
+```shell script
 sudo ln -s /usr/include/oracle/19.5/client $ORACLE_HOME/include
 sudo mkdir  -p /etc/orcale
 ```
 
 - создать файл, добавить одну строку и сохранить
 
-```
+```shell script
 sudo nano /etc/orcale/sqlnet.ora
 
 SQLNET.OUTBOUND_CONNECT_TIMEOUT = 5000 ms
@@ -79,7 +79,7 @@ SQLNET.OUTBOUND_CONNECT_TIMEOUT = 5000 ms
 --------------------------------------------------------
 [Установить Nginx] (https://nginx.org/ru/linux_packages.html)
 
-```
+```shell script
 sudo apt install nginx
 sudo systemctl enable nginx
 systemctl status nginx
@@ -87,7 +87,7 @@ systemctl status nginx
 
 --------------------------------------------------------
 Настройка файревола
-```
+```shell script
 sudo ufw app list
 sudo ufw allow OpenSSH
 sudo ufw allow 'Nginx HTTP'
@@ -97,7 +97,7 @@ sudo ufw enable
 
 --------------------------------------------------------
 Добвить пользователя flask в группу www-data
-```
+```shell script
 sudo usermod -a -G www-data flask
 ```
 --------------------------------------------------------
@@ -108,13 +108,19 @@ sudo usermod -a -G www-data flask
 примеры команд администрирование Nginx
 1. Управление Nginx
 * Запуск
-```sudo systemctl stop nginx```
+```shell script
+sudo systemctl stop nginx
+```
 
 * Остановка
-```sudo systemctl start nginx```
+```shell script
+sudo systemctl start nginx
+```
 
 * Статус
-```systemctl status nginx```
+```shell script
+systemctl status nginx
+```
 
 --------------------------------------------------------
 
