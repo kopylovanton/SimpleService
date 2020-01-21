@@ -58,10 +58,10 @@ class stableApi(Resource):
         adict['source_system']=source_system
         buf = pAssertion.chekAssertions(adict,'GET',uid)
         if buf['rc'] == 200:
-            args=inward_parms_preprocessing(args,log)
+            args=inward_parms_preprocessing(args,log,simple_app.parm)
             ora.execute(simple_app.parms['SQL_GET'], bindvars=args, uid=uid,fetch=True,fetchcount=simple_app.parms['MAX_FETCH_ROWS'])
             buf = ora.data
-            buf['records']=outward_parms_preprocessing(buf['records'],log)
+            buf['records']=outward_parms_preprocessing(buf['records'],log,simple_app.parms)
         else:
             buf['records'] = []
 
