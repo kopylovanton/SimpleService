@@ -28,6 +28,7 @@ SPECIFICATIONS:
     TITLE: "Processing system API"
     DESCRITION: "Template get service "
     VERSION: "V1"
+    RELEASE: "2020_01_21"
   GET_DESCRITION:
     DESCRITION: "Get couple rows from dual"
     INPUT_REQUIRED_FIELDS:

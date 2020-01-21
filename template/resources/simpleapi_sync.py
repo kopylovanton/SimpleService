@@ -59,11 +59,11 @@ class SimpeSyncApi(object):
             p = yaml.load(file, Loader=yaml.FullLoader)
         return p
     def __appyAssert(self):
-        for p in ['URL', 'LOG_LEVEL', 'SQL_GET', 'MAX_FETCH_ROWS', 'SPECIFICATIONS']:
+        for p in ['URL', 'LOG_LEVEL', 'SQL_GET', 'MAX_FETCH_ROWS', 'SPECIFICATIONS','VERSION','RELEASE']:
             assert len(str(self.parms[p])) > 1, '/config/config_get.yaml -> %s does not defined' % p
     def simpleApi(self):
 
-        api = Api(self.blueprint, version=self.parms['SPECIFICATIONS']['SERVICE_DESCRITION']['VERSION'], \
+        api = Api(self.blueprint, version=self.parms['SPECIFICATIONS']['SERVICE_DESCRITION']['RELEASE'], \
                   title=self.parms['SPECIFICATIONS']['SERVICE_DESCRITION']['TITLE'], \
                   doc='/swagger',
                   description=self.parms['SPECIFICATIONS']['SERVICE_DESCRITION']['DESCRITION'],
