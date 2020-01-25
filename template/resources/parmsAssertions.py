@@ -47,7 +47,7 @@ class pAssertion(object):
                 except:
                     resp = {'rc': 412, 'message': 'Inward parameter %s does not pass format assertion %s' % (p,fa)}
         if resp['rc']==412:
-            self.log.warning('Assertion error for UID %s, %s' % (uid,resp['message']))
+            self.log.warning('Assertion error for Message IDT %s, %s' % (uid,resp['message']))
         return resp
 
     def __load_parms(self):

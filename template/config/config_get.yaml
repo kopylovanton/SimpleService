@@ -1,4 +1,4 @@
-# WS http path = <host>:<port>/<URL>/<VERSION>/<source_system>/<uid>?...
+# WS http path = <host>:<port>/<URL>/<VERSION>
 # port set up into nginx config file
 URL : '+-template-+'
 
@@ -24,6 +24,7 @@ MAX_FETCH_ROWS : 1000
 
 # WS documentation and swagger file http path <host>:<port>/<url>/swagger
 SPECIFICATIONS:
+# WS http path = <host>:<port>/<URL>/<VERSION>
   VERSION: "V1"
   SERVICE_DESCRITION:
     TITLE: "Processing system API"

@@ -38,6 +38,7 @@ class SimpeSyncApi(object):
         self.get_input_required_fields = self.parms['SPECIFICATIONS']['GET_DESCRITION']['INPUT_REQUIRED_FIELDS']
         self.get_responce_fields = self.parms['SPECIFICATIONS']['GET_DESCRITION']['RESPONCE_FIELDS']
         self.apiurl = '/' + self.parms['URL']+ '/' + self.parms['SPECIFICATIONS']['VERSION']
+        self.release = self.parms['SPECIFICATIONS']['SERVICE_DESCRITION']['RELEASE']
 
         from flask_restplus.apidoc import apidoc
         apidoc.url_prefix = self.apiurl
@@ -83,7 +84,7 @@ class SimpeSyncApi(object):
         'rc': fields.Integer(required=True, description='Responce code'),
         'message': fields.String(required=True, description='Responce message'),
         'source_system': fields.String(required=True, description='Surce system IDT for logging'),
-        'uid': fields.String(required=True, description='Unique message idt'),
+        'message_idt': fields.String(required=True, description='Unique message idt'),
         'input_parms': fields.Nested(self.api.model('get_input_parms',
                                                {i: fields.String(description=self.get_input_required_fields[i]) for i in
                                                 self.get_input_required_fields})),

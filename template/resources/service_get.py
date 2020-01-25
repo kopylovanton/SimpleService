@@ -24,8 +24,8 @@ logging.basicConfig(format=logFormat, level=logging.ERROR)
 
 log = logging.getLogger(simple_app.parms['URL'])
 log.setLevel(simple_app.parms['LOG_LEVEL'])
-log.info('Start process worker at URL = <host>:<port>/%s , version: %s  ' %
-         (simple_app.apiurl , __version__))
+log.info('Start process worker at URL = <host>:<port>%s , template version: %s , configurations release %s' %
+         (simple_app.apiurl , __version__,simple_app.release))
 
 # Open Oracle connections
 ora = db_connections(log)
@@ -33,9 +33,9 @@ ora = db_connections(log)
 pAssertion = pAssertion(log)
 
 
-@simple_app.api.route('/<string:source_system>/<string:uid>')
+@simple_app.api.route('/<string:source_system>/<string:message_idt>')
 @simple_app.api.doc(params={'source_system': 'Surce system IDT for logging',
-                 'uid': 'Unique message idt'})
+                 'message_idt': 'Unique message idt'})
 class stableApi(Resource):
     """ Base api for get, put, udate operaions """
 
@@ -46,35 +46,35 @@ class stableApi(Resource):
                         412: 'Failed assertion for inward parameters'},
              params=simple_app.get_input_required_fields)
     @simple_app.api.marshal_with(simple_app.get_responce_model)
-    def get(self, source_system, uid):
+    def get(self, source_system, message_idt):
         # try:
         start_time = time.time()
         args = simple_app.get_input_parser.parse_args()
         ipadr = request.remote_addr
-        log.info('Message UID:%s, from SYSTEM <%s>, IP <%s> , started with input parameters: %s' %
-                 (uid, source_system, ipadr, str(args)))
+        log.info('Message IDT:%s, from SYSTEM <%s>, IP <%s> , started with input parameters: %s' %
+                 (message_idt, source_system, ipadr, str(args)))
         # Assertion
         adict = args.copy()
         adict['source_system']=source_system
-        buf = pAssertion.chekAssertions(adict,'GET',uid)
+        buf = pAssertion.chekAssertions(adict,'GET',message_idt)
         if buf['rc'] == 200:
             args=inward_parms_preprocessing(args,log,simple_app.parms)
-            ora.execute(simple_app.parms['SQL_GET'], bindvars=args, uid=uid,fetch=True,fetchcount=simple_app.parms['MAX_FETCH_ROWS'])
+            ora.execute(simple_app.parms['SQL_GET'], bindvars=args, uid=message_idt,fetch=True,fetchcount=simple_app.parms['MAX_FETCH_ROWS'])
             buf = ora.data
-            buf['records']=outward_parms_preprocessing(buf['records'],log,simple_app.parms)
+            buf['records']=outward_parms_preprocessing(buf.get('records',[]),log,simple_app.parms)
         else:
             buf['records'] = []
 
         buf['input_parms'] = args
         buf['source_system'] = source_system
-        buf['uid'] = uid
+        buf['message_idt'] = message_idt
 
         dtime = round(time.time() - start_time, 4)
         if buf['rc']==200:
             serviseStat.putGetItem(dtime)
         else:
             serviseStat.putErrItem()
-        log.info("Message UID:%s, processed in --- %s seconds ---" % (uid, dtime))
+        log.info("Message IDT:%s, processed in --- %s seconds ---" % (message_idt, dtime))
         return buf, buf['rc']
     # except:
     # return 'Server internal error', 500

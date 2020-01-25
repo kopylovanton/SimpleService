@@ -17,6 +17,7 @@ echo "{'rc': 500, 'message': 'Internal server error'}" > /home/flask/api/nginx/5
 echo "{'rc': 404, 'message': 'Can not find resources'}" > /home/flask/api/nginx/404.json
 chown -R flask:www-data ~/api/
 chmod +x run.sh
+cp logs/logrotate.conf /etc/logrotate.d/$serviceName
 cp systemd/api-template.service systemd/api-$serviceName.service || { echo '!!!Finish with ERROR: service move failed' ; exit 1; }
 cp systemd/api-template.socket systemd/api-$serviceName.socket || { echo '!!!Finish with ERROR: socket move failed' ; exit 1; }
 cp systemd/api-$serviceName.service /etc/systemd/system || { echo '!!!Finish with ERROR: service copy failed' ; exit 1; }

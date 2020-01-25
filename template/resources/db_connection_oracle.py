@@ -61,13 +61,13 @@ class Oracle(object):
             self.__connected = True
             self.db.current_schema = self.current_schema
             self.db.callTimeout = self.callTimeout
-            self.log.info('Message UID:%s - DB <%s> connection started' % (uid, self.conn_string))
+            self.log.info('Message IDT:%s - DB <%s> connection started' % (uid, self.conn_string))
         except cx_Oracle.DatabaseError as e:
             errorObj, = e.args
             self.data = {'rc': 500, 'message': 'Can not connect to DB . Oracle error message: ' + str(errorObj.message)}
             self.__connected = False
             self.log.error(
-                'Message UID:%s - Can not connect to DB <%s>. Oracle error message: ' % (uid, self.conn_string) + str(
+                'Message IDT:%s - Can not connect to DB <%s>. Oracle error message: ' % (uid, self.conn_string) + str(
                     errorObj.message))
 
     def disconnect(self):
@@ -76,12 +76,11 @@ class Oracle(object):
         if the connection instance doesn't exist, ignore the exception.
         """
         try:
-            self.cursor.close()
             self.db.close()
             self.__connected = False
             self.log.info('DB <%s> connection finished' % (self.conn_string))
         except:
-            pass
+            self.__connected = False
 
     def execute(self, sql, bindvars={}, commit=False, uid='unknown', fetch=True, fetchcount = 1000):
         """
@@ -108,15 +107,16 @@ class Oracle(object):
                 if commit:
                     self.db.commit()
                 self.log.info(
-                    "Message UID:%s, SQL executed in --- %s seconds ---" % (uid, round(time.time() - start_time, 4)))
+                    "Message IDT:%s, SQL executed in --- %s seconds ---" % (uid, round(time.time() - start_time, 4)))
 
             except cx_Oracle.DatabaseError as e:
                 errorObj, = e.args
                 self.data = {'rc': 500,
                              'message': 'Can not execute SQL. Oracle error message: ' + str(errorObj.message)}
-                self.__connected = False
                 self.log.error(
-                    'Message UID:%s - Can not execute SQL . Oracle error message: ' % (uid) + str(errorObj.message))
+                    'Message IDT:%s - Can not execute SQL . Oracle error message: ' % (uid) + str(errorObj.message))
+                self.data['records']=[]
+                self.disconnect()
 
     def __db_not_connect(self):
         """ Check DB status """
