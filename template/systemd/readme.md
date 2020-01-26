@@ -11,3 +11,14 @@ api-template.service| Конфигурация сервиса приложени
 logrotate.conf      | Конфигурация сервиса ротации логов | /etc/logrotate.d/$serviceName
 
 по умолчанию ротация логов настроена на 14 дней 
+конфигурацию ротации логов nginx добавляется при установке nginx
+
+Cтатьи по конфигурированию системных сервисов
+---------------------------------------------
+[systemd](https://ru.wikipedia.org/wiki/Systemd)
+
+[logrotate](https://wiki.archlinux.org/index.php/Logrotate)
+
+[howto systemd](https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-gunicorn-and-nginx-on-ubuntu-18-04-ru#%D1%88%D0%B0%D0%B3-4-%E2%80%94-%D0%BD%D0%B0%D1%81%D1%82%D1%80%D0%BE%D0%B9%D0%BA%D0%B0-gunicorn)
+
+[howto logrotate](https://www.digitalocean.com/community/tutorials/how-to-manage-logfiles-with-logrotate-on-ubuntu-16-04)
