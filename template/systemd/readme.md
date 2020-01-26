@@ -8,6 +8,6 @@
 --------------------|------------------------------------|--------------------------------------
 api-template.socket | Конфигурация сервиса сокета        | systemd/api-$serviceName.socket 
 api-template.service| Конфигурация сервиса приложения    | systemd/api-$serviceName.service 
-logrotate.conf      | Конфигурация сервиса ротации логов | systemd/api-$serviceName.service 
+logrotate.conf      | Конфигурация сервиса ротации логов | /etc/logrotate.d/$serviceName
 
 по умолчанию ротация логов настроена на 14 дней 
