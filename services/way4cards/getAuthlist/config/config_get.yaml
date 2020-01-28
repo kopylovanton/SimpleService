@@ -100,4 +100,4 @@ ASSERTIONS_PARMS:
 
 ASSERTIONS_FORMATS:
   GET:
-    inp2: 're=[0-9,a-z,A-Z]+'
+    mainContractNumber: 're=[0-9,a-z,A-Z]+'
