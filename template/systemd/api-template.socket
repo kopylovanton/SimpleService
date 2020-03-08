@@ -5,7 +5,7 @@ Description=api-+-template-+ socket
 # Change name template -> ??? !!!
 ListenStream=/home/flask/api/socket/+-template-+.sock
 User=flask
-Group=www-data
+Group=nginx
 
 [Install]
 WantedBy=sockets.target

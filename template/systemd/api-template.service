@@ -7,7 +7,7 @@ After=network.target
 PermissionsStartOnly = true
 # the specific user that our service will run as
 User=flask
-Group=www-data
+Group=nginx
 
 ## change path !!!!
 WorkingDirectory=/home/flask/api/+-template-+

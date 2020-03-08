@@ -61,6 +61,7 @@ Review the status information that is displayed on your screen.
 [Configuring an Oracle Database for RPM Based](http://oracle-help.com/oracle-19c/creating-and-configuring-an-oracle-database-for-rpm-based/)
 
 ```
+su oracle
 [oracle@oracle19c sw]# ps -ef|grep pmon
 oracle   29358     1  0 03:47 ?        00:00:00 ora_pmon_ORCLCDB
 root     30579 17822  0 03:59 pts/0    00:00:00 grep --color=auto pmon
@@ -72,6 +73,8 @@ The Oracle base has been set to /opt/oracle
 ```
 
 ```
+alter system  disable restricted session
+/
 alter session set "_ORACLE_SCRIPT"=true
 /
 CREATE USER bwx IDENTIFIED BY oracle

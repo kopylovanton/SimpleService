@@ -9,3 +9,8 @@
 /var/log/nginx/access.log
 /var/log/nginx/error.log
 ```
+
+Centos 7 Audit log
+```
+sudo cat /var/log/audit/audit.log | grep nginx | grep denied
+```

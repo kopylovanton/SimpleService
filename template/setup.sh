@@ -6,7 +6,7 @@ if [ -z "$1" ]
 fi
 
 serviceName="$1"
-source ~/api/python-api-env/bin/activate
+source /home/flask/api/python-api-env/bin/activate
 cd /home/flask/api/$serviceName
 pwd
 cwd=$(pwd)
@@ -15,7 +15,7 @@ mkdir -p /home/flask/api/socket
 mkdir -p /home/flask/api/nginx
 echo "{'rc': 500, 'message': 'Internal server error'}" > /home/flask/api/nginx/500.json
 echo "{'rc': 404, 'message': 'Can not find resources'}" > /home/flask/api/nginx/404.json
-chown -R flask:www-data ~/api/
+chown -R flask:nginx /home/flask/api/
 chmod +x run.sh
 cp systemd/logrotate.conf /etc/logrotate.d/$serviceName
 cp systemd/api-template.service systemd/api-$serviceName.service || { echo '!!!Finish with ERROR: service move failed' ; exit 1; }
@@ -27,6 +27,7 @@ chmod 755 /etc/systemd/system/api-$serviceName.socket
 systemctl daemon-reload || { echo '!!!Finish with ERROR: systemd comand failed' ; exit 1; }
 systemctl start api-$serviceName.socket
 systemctl enable api-$serviceName.socket
+systemctl enable api-$serviceName
 echo 'Wait 3 sec'
 sleep 3
 echo 'Check service status'
@@ -35,6 +36,7 @@ file /home/flask/api/socket/$serviceName.sock || { echo '!!!Finish with ERROR: S
 
 cp nginx/api-config /etc/nginx/sites-available/
 ln -s /etc/nginx/sites-available/api-config /etc/nginx/sites-enabled
+
 echo '--- Nginx conf test'
 sudo nginx -t || { echo '!!!Finish with ERROR: Nginx conf test' ; exit 1; }
 echo '---'
