@@ -21,7 +21,6 @@ $ gpasswd -a flask wheel
 $ su flask
 $ cd ~/
 $ sudo yum install python3-pip
-#$ sudo yum install python3-devel
 $ sudo yum install gcc
 $ sudo yum install nano
 ```
@@ -58,10 +57,6 @@ gunicorn>=20.0.0
 ```
 --------------------------------------------------------
 Установить клиент Oracle
-
-Рекомендации приведены на основе материалов:
-**[cx-oracle.readthedocs.io](https://cx-oracle.readthedocs.io/en/latest/user_guide/installation.html])**
-и **[help.ubuntu.com](https://help.ubuntu.com/community/Oracle%20Instant%20Client])**
 
 - [загрузить на сервер Basic клиент](https://www.oracle.com/database/technologies/instant-client/linux-x86-64-downloads.html)
 ```shell script
@@ -184,6 +179,8 @@ systemctl status nginx
 --------------------------------------------------------
 
 Примеры команд приведены из 
-[Анологичный пример для Centos](https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-gunicorn-and-nginx-on-centos-7)
+[для Centos](https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-gunicorn-and-nginx-on-centos-7)
+
+[cx-oracle.readthedocs.io](https://cx-oracle.readthedocs.io/en/latest/user_guide/installation.html])**
 
 **При отладке конфигурации использовались только 64 битные компоненты**
