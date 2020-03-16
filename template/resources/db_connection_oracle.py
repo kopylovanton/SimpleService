@@ -100,7 +100,7 @@ class Oracle(object):
                 self.data = {'rc': 200, 'message': 'ok'}
                 if fetch:
                     rows = self.cursor.fetchmany(fetchcount)
-                    columns = [i[0].lower() for i in self.cursor.description]
+                    columns = [i[0] for i in self.cursor.description]
                     self.data['records'] = [dict(zip(columns, row)) for row in rows]
                 self.cursor.close()
                 # Only commit if it-s necessary.
