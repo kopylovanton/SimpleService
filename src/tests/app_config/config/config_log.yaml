@@ -1,0 +1,3 @@
+# https://loguru.readthedocs.io/en/stable/api/logger.html#file
+loguruconf: {None}
+stdout: False

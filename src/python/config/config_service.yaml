@@ -1,0 +1,92 @@
+# port set up into nginx config file
+URL : '+-template-+'
+
+maxQueueSize: 200 # if Queue more than pams value service return 429 RC Too Many Requests
+ACCESS_LOG: False # access log from aiohttp. use nginx access log by default
+
+# WS http path = <host>:<port>/<URL>/<VERSION>
+GET_ENABLED: True
+POST_ENABLED: True
+# WS status check http path <host>:<port>/<url>/<VERISON>/status
+GET_STATUS_ENABLED: True
+# WS documentation and swagger file http path <host>:<port>/<url>/<VERSION>/swagger
+SWAGER_ENABLED: True
+
+# Max rows for result. It depends on server's memory size.
+MAX_FETCH_ROWS : 1000
+
+# get data SQL
+SQL_GET : >
+    SELECT 'Hello1' as parm1, 'World1' as parm2 FROM DUAL
+        where sysdate >= to_date(:inp1,'YYYYMMDD')
+      union all
+    SELECT 'Hello2' as parm1, 'World2' as parm2 FROM DUAL
+        where 4 > :inp2
+      union all
+    SELECT 'Hello3' as parm1, 'World3' as parm2 FROM DUAL
+        where 3 > :inp3 and 1=1
+      union all
+    SELECT sleep(0.1,0.3) as parm1, 'World3' as parm2 FROM DUAL
+
+PROC_POST: >
+    DECLARE
+    k number;
+    BEGIN
+        k := round(DBMS_RANDOM.VALUE(:sleep_from, :sleep_to),2);
+        DBMS_LOCK.sleep(k);
+        :addRC := '0';
+        :addRefId := k;
+    EXCEPTION WHEN OTHERS THEN
+      :addRefId := -1;
+      :addRC := '96';
+    END;
+#SELECT 'Hello' into :parm1 FROM DUAL where 3 > input1 and 1=1;
+
+SPECIFICATIONS:
+# WS http path = <host>:<port>/<URL>/<VERSION>
+  VERSION: "V1"
+  SERVICE_DESCRITION:
+    TITLE: "Simple Service API"
+    DESCRITION: "Template service configuration"
+    RELEASE: "2020_10_12"
+  GET:
+    DESCRITION: "Get couple rows from dual"
+    INPUT_REQUIRED_FIELDS:
+      inp1: "inp1 descr - date in YYYYMMDD format "
+      inp2: "inp2 descr - Set '1-3' for successful get "
+      inp3: "inp3 descr - Set '1-2' for successful get "
+    RESPONCE_FIELDS:
+      parm1: "parm1 descr"
+      parm2: "parm2 descr"
+  POST:
+    DESCRITION: "Post simple proc"
+    INPUT_REQUIRED_FIELDS:
+      sleep_from: "sleep time FROM in sec "
+      sleep_to: "sleep time TO in sec"
+    RESPONSE_FIELDS:
+      addRC: "some add resp"
+      addRefId: "actual sleep time in sec"
+# Assertions [OPTIONAL]
+# if assertions does not exists - all values is allowed
+
+#allowed only if in list - can be removed
+ASSERTIONS_PARMS:
+  GET: # REST method name
+    source_system: ['system1','system2','system3'] # List format 1
+    inp2: ['1', '2' , '3', '2.5']  # List format 1
+    inp3: # List format 2 (it's the same)
+      - '1'
+      - '2'
+  POST: # REST method name
+    source_system: ['system3','system4']
+    sleep_from: ['0','0.1', '0.2','0.3' ]  # List allowed sleep time from
+
+# check formats - can be removed
+ASSERTIONS_FORMATS:
+  GET:
+    inp1: 'date=%Y%m%d'  # check format by datetime.strptime() functions ---- https://docs.python.org/3/library/datetime.html#strftime-strptime-behavior
+    inp2: 're=[0-9,\.]+' # check format by re.fullmatch functions ---- https://docs.python.org/3/library/re.html#module-re
+    inp3: 're=[0-9]+'
+  POST:
+    sleep_from: 're=[0-9,\.]+' # check format - number and dot
+    sleep_to: 're=[0-9,\.]+'

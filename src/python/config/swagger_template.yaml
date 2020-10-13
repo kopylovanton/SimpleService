@@ -1,0 +1,243 @@
+  openapi: 3.0.0
+  info:
+    version: "1.0.0"
+    title: Simple Service API
+    description: Template service configuration
+
+  tags:
+    - name: SimpleService
+      description: Template service configuration
+    - name: HealthCheck
+      description: Health check informations
+  paths:
+     /+-template-+/V1/{message_idt}/{source_system}:
+      get:
+        tags:
+          - SimpleService
+        summary: query data
+        operationId: SimpleServiceGet
+        description: |
+          Get rows from some tables
+        parameters:
+          - in: path
+            name: message_idt
+            description: Unique message idt
+            required: true
+            schema:
+              format: uid
+              type: string
+          - in: path
+            name: source_system
+            description: Surce system IDT for logging
+            required: true
+            schema:
+              type: string
+# here will add parms from config-service.yaml
+        responses:
+          '200':
+            description: Successeful
+            content:
+              application/json:
+                schema:
+                    $ref: '#/components/schemas/get_required_out'
+          '500':
+            description: Some problem with DB source or SQL
+            content:
+              application/json:
+                schema:
+                    $ref: '#/components/schemas/get_required_out'
+          '412':
+            description: Failed assertion for inward parameters
+            content:
+              application/json:
+                schema:
+                    $ref: '#/components/schemas/get_required_out'
+          '429':
+            description: Too Many Requests
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/get_required_out'
+      post:
+        tags:
+          - SimpleService
+        summary: post data
+        operationId: SimpleServicePost
+        description: |
+          Post data to DB
+        parameters:
+          - in: path
+            name: message_idt
+            description: Unique message idt
+            required: true
+            schema:
+              format: uid
+              type: string
+          - in: path
+            name: source_system
+            description: Surce system IDT for logging
+            required: true
+            schema:
+              type: string
+      # here will add parms from config-service.yaml
+        responses:
+          '200':
+            description: Successeful
+            content:
+              application/json:
+                schema:
+                    $ref: '#/components/schemas/post_required_out'
+          '500':
+            description: Some problem with DB source or PL/SQL
+            content:
+              application/json:
+                schema:
+                    $ref: '#/components/schemas/post_required_out'
+          '412':
+            description: Failed assertion for inward parameters
+            content:
+              application/json:
+                schema:
+                    $ref: '#/components/schemas/post_required_out'
+          '429':
+            description: Too Many Requests
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/post_required_out'
+     /+-template-+/V1/status:
+      get:
+        tags:
+          - HealthCheck
+        summary: Health Check
+        operationId: HealthCheck
+        description: |
+          Get health check informations
+        responses:
+          '200':
+            description: Successeful
+            content:
+              application/json:
+                schema:
+                    $ref: '#/components/schemas/status_out'
+          '500':
+            description: Some internal error
+
+
+  components:
+    schemas:
+      get_required_out:
+        type: object
+        required:
+          - message_idt
+          - source_system
+          - rc
+          - message
+          - input_parms
+          - records
+        properties:
+          message_idt:
+            type: string
+            format: uuid
+            example: d290f1ee-6c54-4b01-90e6-d701748f0851
+          source_system:
+            type: string
+            example: dbo
+          rc:
+            type: integer
+            example: 200
+          message:
+            type: string
+            example: Some result message
+          input_parms:
+            type: object
+            description: Echo input parms
+          records:
+            type: object
+            description: data records
+      post_required_out:
+        type: object
+        required:
+          - message_idt
+          - source_system
+          - rc
+          - message
+          - input_parms
+        properties:
+          message_idt:
+            type: string
+            format: uuid
+            example: d290f1ee-6c54-4b01-90e6-d701748f0851
+          source_system:
+            type: string
+            example: dbo
+          rc:
+            type: integer
+            example: 200
+          message:
+            type: string
+            example: Some result message
+          input_parms:
+            type: object
+            description: Echo input parms
+
+      status_out:
+        type: object
+        required:
+          - rc
+          - message
+          - dbConnectionStatus
+          - upTimeInMin
+          - lastSuccessInMin
+          - lastErrorInMin
+          - meanGetTotalDurationInSec
+          - meanPostTotalDurationInSec
+          - meanGetSQLDurationInSec
+          - meanPostPLSQLDurationInSec
+          - workQueue
+          - maxConfQueue
+          - dbConfConPool
+          - dbConfTimeout
+        properties:
+          rc:
+            type: integer
+            example: 200
+          message:
+            type: string
+            example: Some result message
+          db_status:
+            type: string
+            example: Up
+          upTimeInMin:
+            type: integer
+            example: 20
+          lastSuccessInMin:
+            type: integer
+            example: 0.1
+          lastErrorInMin:
+            type: integer
+            example: 123
+          meanGetTotalDurationInSec:
+            type: integer
+            example: 0.0212
+          meanPostTotalDurationInSec:
+            type: integer
+            example: 0.26
+          meanGetSQLDurationInSec:
+            type: integer
+            example: 0.025
+          meanPostPLSQLDurationInSec:
+            type: integer
+            example: 0.22
+          workQueue:
+            type: integer
+            example: 31
+          maxConfQueue:
+            type: integer
+            example: 1000
+          dbConfConPool:
+            type: integer
+            example: 10
+          dbConfTimeout:
+            type: integer
+            example: 10000

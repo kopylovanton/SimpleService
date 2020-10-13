@@ -1,0 +1,13 @@
+# https://loguru.readthedocs.io/en/stable/api/logger.html#file
+loguruconf:
+  handlers :
+    - {
+      sink: "./log/+-template-+.log",
+      enqueue: True,
+      serialize: False,
+      rotation: "100 MB",
+      retention: 10,
+      compression: "zip",
+      level: "INFO"
+    }
+stdout: True

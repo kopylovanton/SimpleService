@@ -1,0 +1,6 @@
+aiohttp[speedups]
+aiohttp-swagger[performance]
+cx-Oracle
+PyYAML
+cryptography
+loguru

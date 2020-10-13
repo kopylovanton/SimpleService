@@ -1,0 +1,26 @@
+
+module mynginx 1.0;
+
+require {
+	type httpd_t;
+	type user_home_t;
+	type initrc_t;
+	class sock_file write;
+	class unix_stream_socket connectto;
+	class file { open read };
+}
+
+#============= httpd_t ==============
+
+#!!!! The file '/home/flask/api/socket/service1.sock' is mislabeled on your system.  
+#!!!! Fix with $ restorecon -R -v /home/flask/api/socket/service1.sock
+allow httpd_t initrc_t:unix_stream_socket connectto;
+
+#!!!! This avc can be allowed using the boolean 'httpd_read_user_content'
+allow httpd_t user_home_t:file open;
+
+#!!!! This avc is allowed in the current policy
+allow httpd_t user_home_t:file read;
+
+#!!!! This avc is allowed in the current policy
+allow httpd_t user_home_t:sock_file write;

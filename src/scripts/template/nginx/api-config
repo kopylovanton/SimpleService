@@ -1,0 +1,39 @@
+
+server {
+    # use 'listen 80 deferred;' for Linux
+    # use 'listen 80 accept_filter=httpready;' for FreeBSD
+    listen 80;
+    client_max_body_size 4G;
+
+    # set the correct host(s) for your server
+    server_name api-flask 192.168.1.38;
+
+    keepalive_timeout 3;
+    send_timeout 15;
+    resolver_timeout 3;
+    client_header_timeout  3;
+    client_body_timeout 3;
+
+
+#-------- Api Service configuration start
+# !!! Change "template" to yours service names
+    location /+-template-+ {
+      proxy_redirect   off;
+      proxy_set_header Host $http_host;
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header X-Forwarded-Proto $scheme;
+      proxy_pass http://unix:/home/flask/api/socket/+-template-+.sock;
+    }
+#------- Api Service configuration end
+
+    error_page 500 502 503 504 /500.json;
+
+    location = /500.json {
+      root /home/flask/api/nginx;
+    }
+     error_page 403 404 /404.json;
+    location = /404.json {
+      root /home/flask/api/nginx;
+    }
+  }
