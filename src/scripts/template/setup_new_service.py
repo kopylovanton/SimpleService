@@ -35,10 +35,10 @@ for dname, dirs, files in os.walk(dirpath):
         if doChange(fpath):
             with open(fpath) as f:
                 s = f.read()
-            cntRep += s.count(args.tempName)
             if cntRep>0:
                 s = s.replace(args.tempName, args.newName)
-            print('>>> process file:', fpath, 'replaced %s template' % str(cntRep))
+            print('>>> process file:', fpath, 'replaced %s template' % str(s.count(args.newName)))
+            cntRep += s.count(args.newName)
             with open(fpath, "w") as f:
                 f.write(s)
 assert cntRep > 3, 'Error replace template service name - try copy new template configuration' \
