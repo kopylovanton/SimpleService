@@ -132,3 +132,7 @@ dmypy.json
 /.idea/modules.xml
 /.idea/vcs.xml
 /.idea/way4flask.iml
+/.idea/SimpleService.iml
+/.idea/inspectionProfiles/profiles_settings.xml
+/.idea/inspectionProfiles/Project_Default.xml
+/.idea/workspace.xml
