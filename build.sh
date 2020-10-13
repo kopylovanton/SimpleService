@@ -45,6 +45,7 @@ cd ..
 rm -rf ./_build
 
 # build src only
+osType="src_only"
 rm -rf ./dist/$osType
 mkdir -p ./dist/$osType
 rm -rf ./_build
