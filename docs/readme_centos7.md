@@ -105,7 +105,7 @@ $ sudo chmod 770 /home/flask
 $ sudo semodule -i mynginx.pp
 ````
 
-добавить строку  в начало файла "include /etc/nginx/sites-available/*;"
+добавить строку  в конец секции http "include /etc/nginx/sites-available/*;"
 ```shell script
 $ sudo nano /etc/nginx/nginx.conf
 ```

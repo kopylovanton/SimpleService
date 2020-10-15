@@ -1,13 +1,15 @@
 [Unit]
 Description=Template api daemon
-Requires=api-+-template-+.socket
 After=network.target
 
 [Service]
-PermissionsStartOnly = true
 # the specific user that our service will run as
 User=flask
 Group=nginx
+StartLimitInterval=11s
+RestartSec=2
+StartLimitBurst=5
+Restart=always
 
 ## change path !!!!
 WorkingDirectory=/home/flask/api/+-template-+

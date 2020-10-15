@@ -26,12 +26,6 @@ class ApiHandler(LoadSwagger, WSStatistic, PAssertion, Oracle):
                 'message': 'Success',
                 'input_parms': {c: request.query[c] for c in request.query},
                 }
-        peername = request.transport.get_extra_info('peername')
-        if peername is not None:
-            cli_ip = str(peername[0])
-        else:
-            cli_ip = 'ip?'
-        # qsize = self.dbExecutor._work_queue.qsize()
 
         # GET Assertions
         if 'unknown' in [data['message_idt'], data['source_system']]:
@@ -53,14 +47,15 @@ class ApiHandler(LoadSwagger, WSStatistic, PAssertion, Oracle):
             data['message'] = a_resp['message']
         if data['rc'] == 200:
             data['input_parms'] = inward_parms_preprocessing(request.method, data['input_parms'], self.parms)
-        return data, cli_ip
+        return data
 
     # GET
     async def get_record(self, request):
         self.qsize += 1
         start_time = time.time()
         sqld = '-'
-        data, cli_ip = self.base_request(request)
+        with self.log.catch('Request parce error:'):
+            data = self.base_request(request)
         data['records'] = []
         # GET DB Call
         if data['rc'] == 200:
@@ -82,10 +77,10 @@ class ApiHandler(LoadSwagger, WSStatistic, PAssertion, Oracle):
         dtime = round(time.time() - start_time, 4)
         self.GetTotalDurationMean = round((1.8 * self.GetTotalDurationMean + 0.2 * dtime) / 2, 4)
         logmsg = ('%s: [IDT:%s] [rc:%s; %s] [Queue:%s] [Request Total/SQL:%s/%s] '
-                  '[Mean Total/SQL:%s/%s] [SYSTEM:<%s>] [IP:<%s>] [input parms: %s]') % \
+                  '[Mean Total/SQL:%s/%s] [SYSTEM:<%s>] [input parms: %s]') % \
                  (request.method, data['message_idt'], data['rc'], data['message'], self.qsize, dtime, sqld,
                   self.GetTotalDurationMean, self.StatSQLDurationMean,
-                  data['source_system'], cli_ip, request.query)
+                  data['source_system'], request.query)
         if data['rc'] == 200:
             self.log.info(logmsg)
         else:
@@ -99,7 +94,8 @@ class ApiHandler(LoadSwagger, WSStatistic, PAssertion, Oracle):
         self.qsize += 1
         start_time = time.time()
         sqld = '-'
-        data, cli_ip = self.base_request(request)
+        with self.log.catch('Request parce error:'):
+            data = self.base_request(request)
 
         # DB Call
         if data['rc'] == 200:
@@ -119,10 +115,10 @@ class ApiHandler(LoadSwagger, WSStatistic, PAssertion, Oracle):
         dtime = round(time.time() - start_time, 4)
         self.PostTotalDurationMean = round((1.8 * self.PostTotalDurationMean + 0.2 * dtime) / 2, 4)
         logmsg = ('%s: [IDT:%s] [rc:%s; %s] [Queue:%s] [Request Total/PLSQL:%s/%s] [Mean Total/PLSQL:%s/%s] '
-                  '[SYSTEM:<%s>] [IP:<%s>] [input parms: %s]') % \
+                  '[SYSTEM:<%s>] [input parms: %s]') % \
                  (request.method, data['message_idt'], data['rc'], data['message'], self.qsize, dtime, sqld,
                   self.PostTotalDurationMean, self.StatPLSQLDurationMean,
-                  data['source_system'], cli_ip, request.query)
+                  data['source_system'], request.query)
         if data['rc'] == 200:
             self.log.info(logmsg)
         else:

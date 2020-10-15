@@ -10,4 +10,4 @@ loguruconf:
       compression: "zip",
       level: "INFO"
     }
-stdout: True
+stderr: True

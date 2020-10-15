@@ -1,10 +1,12 @@
-import pathlib
-import sys
 import argparse
-
-from aiohttp import web
+import os
+import pathlib
+import socket
+import sys
 
 sys.path.append('./lib')
+
+from aiohttp import web
 
 import src
 
@@ -44,20 +46,33 @@ def init_app(lpatch=str(pathlib.Path().absolute()) + '/'):
     return init_app, init_handler
 
 
+def get_sock(socket_path):
+    if socket_path is None:
+        return None
+    if len(socket_path) < 1:
+        return None
+    s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    if os.path.exists(socket_path):
+        os.unlink(socket_path)
+    s.bind(socket_path)
+    os.chmod(socket_path, 0o660)
+    return s
+
+
 if __name__ == "__main__":
     app, handler = init_app()
     parser = argparse.ArgumentParser(description="aiohttp server")
     parser.add_argument('--path')
     parser.add_argument('--port')
     args = parser.parse_args()
+    with handler.log.catch('Error create socket'):
+        serv_sock = get_sock(args.path)
     try:
         if handler.ACCESS_LOG:
-            web.run_app(app, access_log=handler.log, path=args.path, port=args.port)
+            web.run_app(app, access_log=handler.log, sock=serv_sock, port=args.port)
         else:
-            web.run_app(app, access_log=None, path=args.path, port=args.port)
-
+            web.run_app(app, access_log=None, sock=serv_sock, port=args.port)
     finally:
         handler.db_disconnect()
         handler.log.info('Server stopped')
         handler.log.complete()
-

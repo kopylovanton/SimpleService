@@ -35,7 +35,7 @@ for dname, dirs, files in os.walk(dirpath):
         if doChange(fpath):
             with open(fpath) as f:
                 s = f.read()
-            if cntRep>0:
+            if s.count(args.tempName)>0:
                 s = s.replace(args.tempName, args.newName)
             print('>>> process file:', fpath, 'replaced %s template' % str(s.count(args.newName)))
             cntRep += s.count(args.newName)

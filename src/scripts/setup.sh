@@ -19,20 +19,10 @@ echo "{'rc': 404, 'message': 'Can not find resources'}" > /home/flask/api/nginx/
 chown -R flask:nginx /home/flask/api/
 chmod +x run.sh
 sudo cp ./template/systemd/api-template.service ./template/systemd/api-$serviceName.service || { echo '!!!Finish with ERROR: service move failed' ; exit 1; }
-sudo cp ./template/systemd/api-template.socket ./template/systemd/api-$serviceName.socket || { echo '!!!Finish with ERROR: socket move failed' ; exit 1; }
 sudo cp ./template/systemd/api-$serviceName.service /etc/systemd/system || { echo '!!!Finish with ERROR: service copy failed' ; exit 1; }
-sudo cp ./template/systemd/api-$serviceName.socket /etc/systemd/system || { echo '!!!Finish with ERROR: socket move failed' ; exit 1; }
-sudo chmod 755 /etc/systemd/system/api-$serviceName.service
-sudo chmod 755 /etc/systemd/system/api-$serviceName.socket
+sudo chmod 775 /etc/systemd/system/api-$serviceName.service
 sudo systemctl daemon-reload || { echo '!!!Finish with ERROR: systemd comand failed' ; exit 1; }
-sudo systemctl start api-$serviceName.socket
-sudo systemctl enable api-$serviceName.socket
 sudo systemctl enable api-$serviceName
-echo 'Wait 3 sec'
-sleep 3
-echo 'Check service status'
-sudo systemctl status api-$serviceName.socket || { echo '!!!Finish with ERROR: Socket file check failed' ; exit 1; }
-file /home/flask/api/socket/$serviceName.sock || { echo '!!!Finish with ERROR: Socket check failed' ; exit 1; }
 
 sudo cp ./template/nginx/api-config /etc/nginx/sites-available/
 sudo ln -s /etc/nginx/sites-available/api-config /etc/nginx/sites-enabled

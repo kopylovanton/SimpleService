@@ -17,7 +17,7 @@ class LoguruLogger(object):
                 _logparms = yaml.load(file, Loader=yaml.FullLoader)
         if _logparms.get('loguruconf', []).get('handlers', False):
             logger.configure(**_logparms['loguruconf'])
-        if _logparms.get('stdout', False):
-            logger.add(sys.stdout)
+        if _logparms.get('stderr', False):
+            logger.add(sys.stderr)
         logger.info('logger configuration imported' + str(_logparms))
         return logger
