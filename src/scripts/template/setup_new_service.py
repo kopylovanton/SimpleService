@@ -58,8 +58,8 @@ addconf = '''location /%s {
     location /''' % (args.newName, args.newName)
 if  os.path.exists('/etc/nginx/sites-available/api-config') \
     and os.path.isfile('/etc/nginx/sites-available/api-config'):
-        shutil.copyfile('/etc/nginx/sites-available/api-config', dirpath + 'template/nginx/api-config')
-        fpath = dirpath + '/nginx/api-config'
+        shutil.copyfile('/etc/nginx/sites-available/api-config', dirpath + '/template/nginx/api-config')
+        fpath = dirpath + '/template/nginx/api-config'
         with open(fpath) as f:
             s = f.read()
         if s.find(args.newName) < 0:
