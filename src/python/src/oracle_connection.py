@@ -22,34 +22,35 @@ class Oracle(LoguruLogger):
 
     def __init__(self, lpatch, enccp: str = 'utf-8'):
         super().__init__(lpatch)
-        self.cpage = enccp
-        self.db_connected = False
-
-        self.parmsdb = self._load_db_parms(lpatch)
-        for p in ['DB_CONN_STRING', 'DB_USER_NAME', 'DB_USER_PASSWORD', 'DB_ENCODING', 'CURRENT_SCHEMA',
-                  'DB_EXECUTE_TIMEOUT', 'DB_CONN_POOL']:
-            assert len(str(self.parmsdb[p])) > 1, '/config/config_db.yaml -> %s does not defined' % p
-        self.kstore = self._kstore()
-
-        self.username = self.parmsdb['DB_USER_NAME']
-        self.pwd = self.parmsdb['DB_USER_PASSWORD'][4:]
-        self.conn_string = self.parmsdb['DB_CONN_STRING']
-        self.encoding = self.parmsdb['DB_ENCODING']
-        self.current_schema = self.parmsdb['CURRENT_SCHEMA']
-        self.callTimeout = self.parmsdb['DB_EXECUTE_TIMEOUT']
-        self.db_connected = False
-        self.connPolSize = int(self.parmsdb['DB_CONN_POOL'])
-        self.StatSQLDurationMean = 0
-        self.StatPLSQLDurationMean = 0
-        self.connPol = None
-        self.dbExecutor = None
-        try:
-            self.db_connect('-=StartUP=-')
-        except cx_Oracle.DatabaseError as e:
+        with self.log.catch('Error load DB connections configurations:'):
+            self.cpage = enccp
             self.db_connected = False
-            error_obj, = e.args
-            self.log.error('DB <%s> have not connected.  Oracle error message: ' % self.conn_string + str(
-                error_obj.message))
+
+            self.parmsdb = self._load_db_parms(lpatch)
+            for p in ['DB_CONN_STRING', 'DB_USER_NAME', 'DB_USER_PASSWORD', 'DB_ENCODING', 'CURRENT_SCHEMA',
+                      'DB_EXECUTE_TIMEOUT', 'DB_CONN_POOL']:
+                assert len(str(self.parmsdb[p])) > 1, '/config/config_db.yaml -> %s does not defined' % p
+            self.kstore = self._kstore()
+
+            self.username = self.parmsdb['DB_USER_NAME']
+            self.pwd = self.parmsdb['DB_USER_PASSWORD'][4:]
+            self.conn_string = self.parmsdb['DB_CONN_STRING']
+            self.encoding = self.parmsdb['DB_ENCODING']
+            self.current_schema = self.parmsdb['CURRENT_SCHEMA']
+            self.callTimeout = self.parmsdb['DB_EXECUTE_TIMEOUT']
+            self.db_connected = False
+            self.connPolSize = int(self.parmsdb['DB_CONN_POOL'])
+            self.StatSQLDurationMean = 0
+            self.StatPLSQLDurationMean = 0
+            self.connPol = None
+            self.dbExecutor = None
+            try:
+                self.db_connect('-=StartUP=-')
+            except cx_Oracle.DatabaseError as e:
+                self.db_connected = False
+                error_obj, = e.args
+                self.log.error('DB <%s> have not connected.  Oracle error message: ' % self.conn_string + str(
+                    error_obj.message))
 
     def __del__(self):
         self.db_disconnect()
@@ -149,7 +150,6 @@ class Oracle(LoguruLogger):
                 self.log.error(
                     'Message IDT:%s - Can not execute SQL . Oracle error message: ' % uid + str(error_obj.message))
                 self.db_disconnect()
-
         return resp
 
     def sync_plsql(self, plsql: str = "begin :len := length(:inP); end;", in_val=None,

@@ -11,13 +11,14 @@ from .logconf import LoguruLogger
 class PAssertion(LoguruLogger):
     def __init__(self, lpatch, enccp='utf-8'):
         super().__init__(lpatch)
-        self.cpage = enccp
-        parms = self._load_service_parms(lpatch)
-        self.parms_assertions = {}
-        self.formats_assertions = {}
-        self.required_fields = {}
-        self.allowedReqType = ['GET', 'POST']
-        self.log.info('Assertions initialized')
+        with self.log.catch('Error load service configurations:'):
+            self.cpage = enccp
+            parms = self._load_service_parms(lpatch)
+            self.parms_assertions = {}
+            self.formats_assertions = {}
+            self.required_fields = {}
+            self.allowedReqType = ['GET', 'POST']
+            self.log.info('Assertions initialized')
 
         for req_type in self.allowedReqType:
             self.required_fields[req_type] = parms.get('SPECIFICATIONS', {}). \
