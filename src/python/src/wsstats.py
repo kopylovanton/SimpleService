@@ -15,6 +15,6 @@ class WSStatistic(LoguruLogger):
 
     def calc_stat(self, rc):
         if rc == 200:
-            self.StatlastSuccess = time.time()
+            self.StatlastSuccess = time.monotonic()
         else:
-            self.StatlastError = time.time()
+            self.StatlastError = time.monotonic()

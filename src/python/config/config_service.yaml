@@ -48,7 +48,7 @@ SPECIFICATIONS:
   SERVICE_DESCRITION:
     TITLE: "Simple Service API"
     DESCRITION: "Template service configuration"
-    RELEASE: "2020_10_12"
+    RELEASE: "2020_10_15"
   GET:
     DESCRITION: "Get couple rows from dual"
     INPUT_REQUIRED_FIELDS:

@@ -16,7 +16,7 @@ class ApiHandler(LoadSwagger, WSStatistic, PAssertion, Oracle):
         super().__init__(lpatch)
         self.GetTotalDurationMean = 0.
         self.PostTotalDurationMean = 0.
-        self.lastGetStat = time.time()
+        self.lastGetStat = time.monotonic()
         self.qcashe = TTLCache(2 * self.maxQueueSize, self.callTimeout / 1000)
 
     # preprocess
@@ -55,7 +55,7 @@ class ApiHandler(LoadSwagger, WSStatistic, PAssertion, Oracle):
 
     # GET
     async def get_record(self, request):
-        start_time = time.time()
+        start_time = time.monotonic()
         sqld = '-'
         with self.log.catch('Request parce error:'):
             data, qsize = self.base_request(request)
@@ -73,11 +73,8 @@ class ApiHandler(LoadSwagger, WSStatistic, PAssertion, Oracle):
             data['records'] = db_resp['records']
             data = outward_parms_preprocessing(request.method, data, self.parms)
             sqld = db_resp['sqld']
-            # except asyncio.TimeoutError:
-            #     data['rc'] = 408
-            #     data['message'] = 'Timeout'
 
-        dtime = round(time.time() - start_time, 4)
+        dtime = round(time.monotonic() - start_time, 4)
         self.GetTotalDurationMean = round((1.8 * self.GetTotalDurationMean + 0.2 * dtime) / 2, 4)
         logmsg = ('%s: [IDT:%s] [rc:%s; %s] [Queue:%s] [Request Total/SQL:%s/%s] '
                   '[Mean Total/SQL:%s/%s] [SYSTEM:<%s>] [input parms: %s]') % \
@@ -94,7 +91,7 @@ class ApiHandler(LoadSwagger, WSStatistic, PAssertion, Oracle):
 
     # POST
     async def post_record(self, request):
-        start_time = time.time()
+        start_time = time.monotonic()
         sqld = '-'
         with self.log.catch('Request parce error:'):
             data, qsize = self.base_request(request)
@@ -114,7 +111,7 @@ class ApiHandler(LoadSwagger, WSStatistic, PAssertion, Oracle):
             data = outward_parms_preprocessing(request.method, data, self.parms)
             sqld = db_resp['sqld']
 
-        dtime = round(time.time() - start_time, 4)
+        dtime = round(time.monotonic() - start_time, 4)
         self.PostTotalDurationMean = round((1.8 * self.PostTotalDurationMean + 0.2 * dtime) / 2, 4)
         logmsg = ('%s: [IDT:%s] [rc:%s; %s] [Queue:%s] [Request Total/PLSQL:%s/%s] [Mean Total/PLSQL:%s/%s] '
                   '[SYSTEM:<%s>] [input parms: %s]') % \
@@ -134,10 +131,10 @@ class ApiHandler(LoadSwagger, WSStatistic, PAssertion, Oracle):
         """calculate statistics"""
         if not self.db_connected:
             self.db_connect()
-        if round((time.time() - self.lastGetStat) / 60, 1) > 5:
+        if round((time.monotonic() - self.lastGetStat) / 60, 1) > 5:
             self.set_thread_pool_executor()
             db_state = await request.loop.run_in_executor(self.dbExecutor, self.db_is_connect)
-            self.lastGetStat = time.time()
+            self.lastGetStat = time.monotonic()
         else:
             db_state = self.db_connected
         if db_state:
@@ -145,13 +142,21 @@ class ApiHandler(LoadSwagger, WSStatistic, PAssertion, Oracle):
         else:
             db_state_str = 'Down'
         qsize = self.qcashe.currsize
+        tmon = time.monotonic()
+        up_time_in_min = round(( tmon - self.StatstartStatTime) / 60, 1)
+        last_successInMin = round((tmon - self.StatlastSuccess) / 60, 1)
+        if last_successInMin == up_time_in_min:
+            last_successInMin = -1
+        last_error_in_min = round((tmon - self.StatlastError) / 60, 1)
+        if last_error_in_min == up_time_in_min:
+            last_error_in_min = -1
         stat = {
             'rc': 200,
             'message': 'Service is up',
             'dbConnectionStatus': db_state_str,
-            'upTimeInMin': round((time.monotonic() - self.StatstartStatTime) / 60, 1),
-            'lastSuccessInMin': round((time.monotonic() - self.StatlastSuccess) / 60, 1),
-            'lastErrorInMin': round((time.monotonic() - self.StatlastError) / 60, 1),
+            'upTimeInMin': up_time_in_min,
+            'lastSuccessInMin': last_successInMin,
+            'lastErrorInMin': last_error_in_min,
             'meanGetTotalDurationInSec': self.GetTotalDurationMean,
             'meanPostTotalDurationInSec': self.PostTotalDurationMean,
             'meanGetSQLDurationInSec': self.StatSQLDurationMean,
@@ -159,7 +164,9 @@ class ApiHandler(LoadSwagger, WSStatistic, PAssertion, Oracle):
             'workQueue': qsize,
             'maxConfQueue': self.maxQueueSize,
             'dbConfConPool': self.connPolSize,
-            'dbConfTimeout': self.callTimeout
+            'dbConfTimeout': self.callTimeout,
+            'srcVersion': self.version,
+            'configRelease': self.release
         }
         logmsg = '%s: [IDT:GetStatus] [rc:200; Success] [Queue:%s] ' % \
                  (request.method, qsize)

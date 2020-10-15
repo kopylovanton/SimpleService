@@ -198,13 +198,15 @@
           - maxConfQueue
           - dbConfConPool
           - dbConfTimeout
+          - srcVersion
+          - configRelease
         properties:
           rc:
             type: integer
             example: 200
           message:
             type: string
-            example: Some result message
+            example: Service is up
           db_status:
             type: string
             example: Up
@@ -241,3 +243,9 @@
           dbConfTimeout:
             type: integer
             example: 10000
+          srcVersion:
+            type: string
+            example: 2020_10_20
+          configRelease:
+            type: string
+            example: 2020_10_20
