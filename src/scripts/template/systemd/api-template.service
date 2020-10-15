@@ -10,7 +10,7 @@ Group=nginx
 StartLimitInterval=11s
 RestartSec=2
 StartLimitBurst=5
-Restart=always
+Restart=on-failure
 
 ## change path !!!!
 WorkingDirectory=/home/flask/api/+-template-+

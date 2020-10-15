@@ -10,7 +10,7 @@ from .logconf import LoguruLogger
 class LoadSwagger(LoguruLogger):
     def __init__(self, lpatch):
         super().__init__(lpatch)
-        with self.log.catch('Error load swagger configuration'):
+        with self.log.catch('Error load swagger configuration', onerror=lambda _: sys.exit(1)):
             self.cpage = 'utf-8'
             self.version = __version__
             self.parms = self._load_assert_parms(lpatch)
@@ -35,7 +35,9 @@ class LoadSwagger(LoguruLogger):
 
     def _appy_assert(self):
         for p in ['URL', 'ACCESS_LOG', 'SQL_GET', 'MAX_FETCH_ROWS', 'SPECIFICATIONS']:
-            assert len(str(self.parms[p])) > 1, '/config/config-service.yaml -> %s does not defined' % p
+            if len(str(self.parms[p])) < 1:
+                self.log.critical('/config/config-service.yaml -> %s does not defined' % p)
+                raise
 
     def _prepare_doc(self, parms, lpatch):
         with self.log.catch(onerror=lambda _: sys.exit(1)):

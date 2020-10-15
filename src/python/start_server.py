@@ -65,7 +65,7 @@ if __name__ == "__main__":
     parser.add_argument('--path')
     parser.add_argument('--port')
     args = parser.parse_args()
-    with handler.log.catch('Error create socket'):
+    with handler.log.catch('Error create socket',onerror=lambda _: sys.exit(1)):
         serv_sock = get_sock(args.path)
     try:
         if handler.ACCESS_LOG:

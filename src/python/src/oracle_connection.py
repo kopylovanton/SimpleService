@@ -29,7 +29,9 @@ class Oracle(LoguruLogger):
             self.parmsdb = self._load_db_parms(lpatch)
             for p in ['DB_CONN_STRING', 'DB_USER_NAME', 'DB_USER_PASSWORD', 'DB_ENCODING', 'CURRENT_SCHEMA',
                       'DB_EXECUTE_TIMEOUT', 'DB_CONN_POOL']:
-                assert len(str(self.parmsdb[p])) > 1, '/config/config_db.yaml -> %s does not defined' % p
+                if len(str(self.parmsdb[p])) < 1:
+                    self.log.critical('/config/config_db.yaml -> %s does not defined' % p)
+                    raise
             self.kstore = self._kstore()
 
             self.username = self.parmsdb['DB_USER_NAME']

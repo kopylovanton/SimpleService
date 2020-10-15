@@ -7,11 +7,10 @@ import yaml
 
 from .logconf import LoguruLogger
 
-
 class PAssertion(LoguruLogger):
     def __init__(self, lpatch, enccp='utf-8'):
         super().__init__(lpatch)
-        with self.log.catch('Error load service configurations:'):
+        with self.log.catch('Error load service configurations:', onerror=lambda _: sys.exit(1)):
             self.cpage = enccp
             parms = self._load_service_parms(lpatch)
             self.parms_assertions = {}
