@@ -8,6 +8,8 @@ loguruconf:
       rotation: "100 MB",
       retention: 10,
       compression: "zip",
-      level: "INFO"
+      level: "INFO",
+      diagnose: False,
+      catch: False
     }
 stderr: True

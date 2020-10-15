@@ -1,0 +1,11 @@
+[Unit]
+Description=api-+-template-+ socket
+
+[Socket]
+# Change name template -> ??? !!!
+ListenStream=/home/flask/api/socket/+-template-+.sock
+SocketUser=flask
+SocketGroup=nginx
+
+[Install]
+WantedBy=sockets.target

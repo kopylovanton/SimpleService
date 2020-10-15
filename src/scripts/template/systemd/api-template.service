@@ -1,5 +1,6 @@
 [Unit]
 Description=Template api daemon
+Requires=api-+-template-+.socket
 After=network.target
 
 [Service]
