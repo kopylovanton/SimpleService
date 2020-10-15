@@ -136,3 +136,4 @@ dmypy.json
 /.idea/inspectionProfiles/profiles_settings.xml
 /.idea/inspectionProfiles/Project_Default.xml
 /.idea/workspace.xml
+/_build/
