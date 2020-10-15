@@ -65,8 +65,8 @@ rm ./_build/simpleservice/lib/_cffi_backend.*.so
 cp ./_build/simpleservice/lib/ujson.*.so ./_build/simpleservice/lib/ujson.so
 rm ./_build/simpleservice/lib/ujson.*.so
 
-rm -rf ./_build/*.pyc
 cd ./_build
+find . -name "*.pyc" -type f -delete
 tar -czf ../dist/$osType/simpleservice-$osType.tar.gz ./simpleservice/
 cd ..
 rm -rf ./_build
@@ -86,8 +86,8 @@ cp -rf ./src/python/* ./_build/simpleservice/
 cp -rf ./src/scripts/* ./_build/simpleservice/
 cp -rf ./docs/* ./_build/simpleservice/docs
 cp ./README.md ./_build/simpleservice/
-rm -rf ./_build/*.pyc
 cd ./_build
+find . -name "*.pyc" -type f -delete
 tar -czf ../dist/$osType/simpleservice_$osType.tar.gz ./simpleservice/
 cd ..
 rm -rf ./_build
