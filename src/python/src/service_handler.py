@@ -89,6 +89,7 @@ class ApiHandler(LoadSwagger, WSStatistic, PAssertion, Oracle):
         else:
             self.log.warning(logmsg)
         self.calc_stat(data['rc'])
+        _ = self.qcashe.popitem()
         return web.json_response(data, status=data['rc'])
 
     # POST
@@ -125,6 +126,7 @@ class ApiHandler(LoadSwagger, WSStatistic, PAssertion, Oracle):
         else:
             self.log.warning(logmsg)
         self.calc_stat(data['rc'])
+        _ = self.qcashe.popitem()
         return web.json_response(data, status=data['rc'])
 
     # GET Service Status
