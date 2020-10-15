@@ -8,9 +8,9 @@ from .logconf import LoguruLogger
 class WSStatistic(LoguruLogger):
     def __init__(self, lpatch):
         super().__init__(lpatch)
-        self.StatstartStatTime = time.time()
-        self.StatlastSuccess = time.time()
-        self.StatlastError = time.time()
+        self.StatstartStatTime = time.monotonic()
+        self.StatlastSuccess = time.monotonic()
+        self.StatlastError = time.monotonic()
         self.log.info('Health check initialized')
 
     def calc_stat(self, rc):

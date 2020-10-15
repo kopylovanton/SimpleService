@@ -4,3 +4,4 @@ cx-Oracle
 PyYAML
 cryptography
 loguru
+cachetools
