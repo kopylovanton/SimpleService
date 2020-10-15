@@ -6,7 +6,7 @@ if [ -z "$1" ]
     exit
 fi
 
-pip3 install -r requirements_dev.txt
+#pip3 install -r requirements_dev.txt
 
 # build src only
 osType="src_only"
@@ -24,14 +24,14 @@ cp -rf ./src/scripts/* ./_build/simpleservice/
 cp -rf ./docs/* ./_build/simpleservice/docs
 cp ./README.md ./_build/simpleservice/
 
-mkdir ./_build/simpleservice/tests
-cp -rf ./src/tests/* ./_build/simpleservice/tests/
+#mkdir ./_build/simpleservice/tests
+#cp -rf ./src/tests/* ./_build/simpleservice/tests/
 rm -rf ./_build/*.pyc
 cd ./_build
 
-pytest || { echo '!!!Finish with ERROR: test failed' ; exit 1; }
+#pytest || { echo '!!!Finish with ERROR: test failed' ; exit 1; }
 
-rm -rf ./simpleservice/tests/
+#rm -rf ./simpleservice/tests/
 
 tar -czf ../dist/$osType/simpleservice_$osType.tar.gz ./simpleservice/
 cd ..
