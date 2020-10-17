@@ -16,13 +16,13 @@ mkdir -p /home/flask/api/socket
 mkdir -p /home/flask/api/nginx
 echo "{'rc': 500, 'message': 'Internal server error'}" > /home/flask/api/nginx/500.json
 echo "{'rc': 404, 'message': 'Can not find resources'}" > /home/flask/api/nginx/404.json
-chown -R flask:nginx /home/flask/api/
+#chown -R flask:nginx /home/flask/api/
 chmod +x run.sh
 sudo cp ./template/systemd/api-template.service ./template/systemd/api-$serviceName.service || { echo '!!!Finish with ERROR: service move failed' ; exit 1; }
 #sudo cp ./template/systemd/api-template.socket ./template/systemd/api-$serviceName.socket || { echo '!!!Finish with ERROR: socket move failed' ; exit 1; }
 sudo cp ./template/systemd/api-$serviceName.service /etc/systemd/system || { echo '!!!Finish with ERROR: service copy failed' ; exit 1; }
 #sudo cp ./template/systemd/api-$serviceName.socket /etc/systemd/system || { echo '!!!Finish with ERROR: socket move failed' ; exit 1; }
-sudo chmod 775 /etc/systemd/system/api-$serviceName.service
+#sudo chmod 775 /etc/systemd/system/api-$serviceName.service
 #sudo chmod 775 /etc/systemd/system/api-$serviceName.socket
 sudo systemctl daemon-reload || { echo '!!!Finish with ERROR: systemd comand failed' ; exit 1; }
 #sudo systemctl start api-$serviceName.socket
