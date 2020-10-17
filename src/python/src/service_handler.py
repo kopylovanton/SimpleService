@@ -77,13 +77,13 @@ class ApiHandler(LoadSwagger, WSStatistic, PAssertion, Oracle):
         dtime = round(time.monotonic() - start_time, 4)
         self.GetTotalDurationMean = round((1.8 * self.GetTotalDurationMean + 0.2 * dtime) / 2, 4)
         logmsg = ('%s: [IDT:%s] [rc:%s; %s] [Queue:%s] [Request Total/SQL:%s/%s] '
-                  '[Mean Total/SQL:%s/%s] [SYSTEM:<%s>] [input parms: %s]') % \
+                  '[Mean Total/SQL:%s/%s] [SYSTEM:<%s>]') % \
                  (request.method, data['message_idt'], data['rc'], data['message'], qsize, dtime, sqld,
-                  self.GetTotalDurationMean, self.StatSQLDurationMean,
-                  data['source_system'], request.query)
+                  self.GetTotalDurationMean, self.StatSQLDurationMean, data['source_system'])
         if data['rc'] == 200:
             self.log.info(logmsg)
         else:
+            logmsg += ' [input parms: %s]' % request.query
             self.log.warning(logmsg)
         self.calc_stat(data['rc'])
         _ = self.qcashe.popitem()
@@ -114,13 +114,13 @@ class ApiHandler(LoadSwagger, WSStatistic, PAssertion, Oracle):
         dtime = round(time.monotonic() - start_time, 4)
         self.PostTotalDurationMean = round((1.8 * self.PostTotalDurationMean + 0.2 * dtime) / 2, 4)
         logmsg = ('%s: [IDT:%s] [rc:%s; %s] [Queue:%s] [Request Total/PLSQL:%s/%s] [Mean Total/PLSQL:%s/%s] '
-                  '[SYSTEM:<%s>] [input parms: %s]') % \
+                  '[SYSTEM:<%s>]') % \
                  (request.method, data['message_idt'], data['rc'], data['message'], qsize, dtime, sqld,
-                  self.PostTotalDurationMean, self.StatPLSQLDurationMean,
-                  data['source_system'], request.query)
+                  self.PostTotalDurationMean, self.StatPLSQLDurationMean, data['source_system'])
         if data['rc'] == 200:
             self.log.info(logmsg)
         else:
+            logmsg += ' [input parms: %s]' % request.query
             self.log.warning(logmsg)
         self.calc_stat(data['rc'])
         _ = self.qcashe.popitem()
