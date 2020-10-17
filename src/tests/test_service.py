@@ -80,8 +80,8 @@ get_testdata = [
      {'dbConfConPool': 10,
       'dbConfTimeout': 10000,
        'dbConnectionStatus': 'UP',
-       'lastErrorInMin': 0.0,
-       'lastSuccessInMin': 0.0,
+       'lastErrorInMin': -1,
+       'lastSuccessInMin': -1,
        'maxConfQueue': 200,
        'meanGetSQLDurationInSec': 0,
        'meanGetTotalDurationInSec': 0.0,
@@ -90,7 +90,10 @@ get_testdata = [
         'message': 'Service is up',
         'rc': 200,
         'upTimeInMin': 0.0,
-        'workQueue': 0}
+        'workQueue': 0,
+        'configRelease': '2020_01_21',
+        'srcVersion': '2020_10_15'
+      }
      ),
     ]
 
