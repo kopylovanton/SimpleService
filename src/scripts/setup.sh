@@ -41,6 +41,15 @@ echo '--- Nginx conf test'
 sudo nginx -t || { echo '!!!Finish with ERROR: Nginx conf test' ; exit 1; }
 echo '---'
 
+sudo systemctl restart nginx
+sudo systemctl start api-$serviceName
 echo '-------------------------'
 echo '-- Setup has completed --'
+echo '-------------------------'
+
+sleep 1
+sudo systemctl status api-$serviceName
+
+echo '-------------------------'
+echo '-- Check service start stutus --'
 echo '-------------------------'
