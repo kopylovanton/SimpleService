@@ -32,7 +32,7 @@ class ApiHandler(LoadSwagger, WSStatistic, PAssertion, Oracle):
         if 'unknown' in [data['message_idt'], data['source_system']]:
             data['rc'] = 400
             data['message'] = 'message_idt or source_system not provided'
-        qsize = self.qcashe.currsize
+        qsize = self.qcashe.currsize()
         if data['rc'] == 200:
             maxqsize = round(self.connPolSize * (self.callTimeout / (1000 * (self.StatSQLDurationMean + 0.0001))))
             if qsize > self.maxQueueSize:
@@ -50,7 +50,7 @@ class ApiHandler(LoadSwagger, WSStatistic, PAssertion, Oracle):
             data['message'] = a_resp['message']
         if data['rc'] == 200:
             data['input_parms'] = inward_parms_preprocessing(request.method, data['input_parms'], self.parms)
-        self.qcashe[time.monotonic()] = 1
+            self.qcashe[time.monotonic()] = 1
         return data, qsize
 
     # GET
@@ -80,13 +80,14 @@ class ApiHandler(LoadSwagger, WSStatistic, PAssertion, Oracle):
                   '[Mean Total/SQL:%s/%s] [SYSTEM:<%s>]') % \
                  (request.method, data['message_idt'], data['rc'], data['message'], qsize, dtime, sqld,
                   self.GetTotalDurationMean, self.StatSQLDurationMean, data['source_system'])
-        if data['rc'] == 200:
+        if data['rc'] in [200,429]:
             self.log.info(logmsg)
         else:
             logmsg += ' [input parms: %s]' % request.query
             self.log.warning(logmsg)
         self.calc_stat(data['rc'])
-        _ = self.qcashe.popitem()
+        if data['rc'] == 200:
+            _ = self.qcashe.popitem()
         return web.json_response(data, status=data['rc'])
 
     # POST
@@ -123,7 +124,8 @@ class ApiHandler(LoadSwagger, WSStatistic, PAssertion, Oracle):
             logmsg += ' [input parms: %s]' % request.query
             self.log.warning(logmsg)
         self.calc_stat(data['rc'])
-        _ = self.qcashe.popitem()
+        if data['rc'] == 200:
+            _ = self.qcashe.popitem()
         return web.json_response(data, status=data['rc'])
 
     # GET Service Status
