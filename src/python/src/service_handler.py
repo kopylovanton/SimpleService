@@ -117,7 +117,7 @@ class ApiHandler(LoadSwagger, WSStatistic, PAssertion, Oracle):
                   '[SYSTEM:<%s>]') % \
                  (request.method, data['message_idt'], data['rc'], data['message'], qsize, dtime, sqld,
                   self.PostTotalDurationMean, self.StatPLSQLDurationMean, data['source_system'])
-        if data['rc'] == 200:
+        if data['rc'] in [200,429]:
             self.log.info(logmsg)
         else:
             logmsg += ' [input parms: %s]' % request.query
