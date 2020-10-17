@@ -65,15 +65,28 @@ class ApiHandler(LoadSwagger, WSStatistic, PAssertion, Oracle):
                       data['input_parms'],
                       data['message_idt'],
                       self.parms['MAX_FETCH_ROWS'])
-            self.set_thread_pool_executor()
-            self.qcashe[time.monotonic()] = 1
-            db_resp = await request.loop.run_in_executor(self.dbExecutor, self.sync_sql, *fparms)
-            _ = self.qcashe.popitem()
-            data['rc'] = db_resp['rc']
-            data['message'] = db_resp['message']
-            data['records'] = db_resp['records']
-            data = outward_parms_preprocessing(request.method, data, self.parms)
-            sqld = db_resp['sqld']
+            db_resp = None
+            try:
+                self.qcashe[time.monotonic()] = 1
+                db_resp = await request.loop.run_in_executor(self.dbExecutor, self.sync_sql, *fparms)
+                _ = self.qcashe.popitem()
+            except RuntimeError as e:
+                error_obj, = e.args
+                if str(error_obj).find('shutdown'):
+                    self.set_thread_pool_executor(force=True)
+                    self.log.warning('Reset db tread pool after error: ' + str(error_obj))
+                    db_resp = await request.loop.run_in_executor(self.dbExecutor, self.sync_sql, *fparms)
+                else:
+                    self.log.error('Get SQL request error: ' + str(error_obj))
+            if db_resp is not None:
+                sqld = db_resp['sqld']
+                data['rc'] = db_resp['rc']
+                data['message'] = db_resp['message']
+                data['records'] = db_resp['records']
+                data = outward_parms_preprocessing(request.method, data, self.parms)
+            else:
+                data['rc'] = 500
+                data['message'] = 'Server error'
 
         dtime = round(time.monotonic() - start_time, 4)
         self.GetTotalDurationMean = round((1.8 * self.GetTotalDurationMean + 0.2 * dtime) / 2, 4)
@@ -102,17 +115,29 @@ class ApiHandler(LoadSwagger, WSStatistic, PAssertion, Oracle):
                       data['input_parms'],
                       self.postOutField,
                       data['message_idt'])
-            self.set_thread_pool_executor()
-            self.qcashe[time.monotonic()] = 1
-            db_resp = await request.loop.run_in_executor(self.dbExecutor, self.sync_plsql, *fparms)
-            _ = self.qcashe.popitem()
-            data['rc'] = db_resp['rc']
-            data['message'] = db_resp['message']
-            for f in self.postOutField:
-                data[f] = db_resp.get(f, '')
-            data = outward_parms_preprocessing(request.method, data, self.parms)
-            sqld = db_resp['sqld']
-
+            db_resp = None
+            try:
+                self.qcashe[time.monotonic()] = 1
+                db_resp = await request.loop.run_in_executor(self.dbExecutor, self.sync_plsql, *fparms)
+                _ = self.qcashe.popitem()
+            except RuntimeError as e:
+                error_obj, = e.args
+                if str(error_obj).find('shutdown') > 0:
+                    self.set_thread_pool_executor(force=True)
+                    self.log.warning('Reset db tread pool after error: ' + str(error_obj))
+                    db_resp = await request.loop.run_in_executor(self.dbExecutor, self.sync_plsql, *fparms)
+                else:
+                    self.log.error('POST PL/SQL request error: ' + str(error_obj))
+            if db_resp is not None:
+                data['rc'] = db_resp['rc']
+                data['message'] = db_resp['message']
+                for f in self.postOutField:
+                    data[f] = db_resp.get(f, '')
+                data = outward_parms_preprocessing(request.method, data, self.parms)
+                sqld = db_resp['sqld']
+            else:
+                data['rc'] = 500
+                data['message'] = 'Server error'
         dtime = round(time.monotonic() - start_time, 4)
         self.PostTotalDurationMean = round((1.8 * self.PostTotalDurationMean + 0.2 * dtime) / 2, 4)
         logmsg = ('%s: [IDT:%s] [rc:%s; %s] [Queue:%s] [Request Total/PLSQL:%s/%s] [Mean Total/PLSQL:%s/%s] '
@@ -127,7 +152,7 @@ class ApiHandler(LoadSwagger, WSStatistic, PAssertion, Oracle):
         self.calc_stat(data['rc'])
         return web.json_response(data, status=data['rc'])
 
-    # GET Service Status
+    # Service Status (GET)
     async def get_stat(self, request):
         """calculate statistics"""
         if not self.db_connected:

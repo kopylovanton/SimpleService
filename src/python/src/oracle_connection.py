@@ -2,8 +2,8 @@
 import base64
 import io
 import os
-import time
 import sys
+import time
 from concurrent import futures
 from typing import Dict
 
@@ -64,14 +64,18 @@ class Oracle(LoguruLogger):
             raise InvalidToken
         return pwd
 
-    def set_thread_pool_executor(self):
+    def set_thread_pool_executor(self, force: bool = False):
         if self.dbExecutor is None:
+            self.dbExecutor = futures.ThreadPoolExecutor(max_workers=self.connPolSize)
+        if force:
             self.dbExecutor = futures.ThreadPoolExecutor(max_workers=self.connPolSize)
         # if self.dbExecutor._shutdown:
         #     self.dbExecutor = futures.ThreadPoolExecutor(max_workers=self.connPolSize)
 
     def db_connect(self, uid: str = 'internal'):
         """ Connect to the database. """
+        if self.db_connected:
+            return
         try:
             self.connPol = cx_Oracle.SessionPool(self.username, self.get_password(), self.conn_string,
                                                  min=self.connPolSize, max=self.connPolSize,
