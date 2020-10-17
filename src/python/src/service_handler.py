@@ -32,7 +32,7 @@ class ApiHandler(LoadSwagger, WSStatistic, PAssertion, Oracle):
         if 'unknown' in [data['message_idt'], data['source_system']]:
             data['rc'] = 400
             data['message'] = 'message_idt or source_system not provided'
-        qsize = self.qcashe.currsize()
+        qsize = self.qcashe.currsize
         if data['rc'] == 200:
             maxqsize = round(self.connPolSize * (self.callTimeout / (1000 * (self.StatSQLDurationMean + 0.0001))))
             if qsize > self.maxQueueSize:
@@ -50,7 +50,6 @@ class ApiHandler(LoadSwagger, WSStatistic, PAssertion, Oracle):
             data['message'] = a_resp['message']
         if data['rc'] == 200:
             data['input_parms'] = inward_parms_preprocessing(request.method, data['input_parms'], self.parms)
-            self.qcashe[time.monotonic()] = 1
         return data, qsize
 
     # GET
@@ -67,7 +66,9 @@ class ApiHandler(LoadSwagger, WSStatistic, PAssertion, Oracle):
                       data['message_idt'],
                       self.parms['MAX_FETCH_ROWS'])
             self.set_thread_pool_executor()
+            self.qcashe[time.monotonic()] = 1
             db_resp = await request.loop.run_in_executor(self.dbExecutor, self.sync_sql, *fparms)
+            _ = self.qcashe.popitem()
             data['rc'] = db_resp['rc']
             data['message'] = db_resp['message']
             data['records'] = db_resp['records']
@@ -86,10 +87,7 @@ class ApiHandler(LoadSwagger, WSStatistic, PAssertion, Oracle):
             logmsg += ' [input parms: %s]' % request.query
             self.log.warning(logmsg)
         self.calc_stat(data['rc'])
-        if data['rc'] == 200:
-            _ = self.qcashe.popitem()
         return web.json_response(data, status=data['rc'])
-
     # POST
     async def post_record(self, request):
         start_time = time.monotonic()
@@ -104,13 +102,16 @@ class ApiHandler(LoadSwagger, WSStatistic, PAssertion, Oracle):
                       self.postOutField,
                       data['message_idt'])
             self.set_thread_pool_executor()
+            self.qcashe[time.monotonic()] = 1
             db_resp = await request.loop.run_in_executor(self.dbExecutor, self.sync_plsql, *fparms)
+            _ = self.qcashe.popitem()
             data['rc'] = db_resp['rc']
             data['message'] = db_resp['message']
             for f in self.postOutField:
                 data[f] = db_resp.get(f, '')
             data = outward_parms_preprocessing(request.method, data, self.parms)
             sqld = db_resp['sqld']
+
 
         dtime = round(time.monotonic() - start_time, 4)
         self.PostTotalDurationMean = round((1.8 * self.PostTotalDurationMean + 0.2 * dtime) / 2, 4)
@@ -124,8 +125,6 @@ class ApiHandler(LoadSwagger, WSStatistic, PAssertion, Oracle):
             logmsg += ' [input parms: %s]' % request.query
             self.log.warning(logmsg)
         self.calc_stat(data['rc'])
-        if data['rc'] == 200:
-            _ = self.qcashe.popitem()
         return web.json_response(data, status=data['rc'])
 
     # GET Service Status
