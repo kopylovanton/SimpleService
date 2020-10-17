@@ -81,13 +81,14 @@ class ApiHandler(LoadSwagger, WSStatistic, PAssertion, Oracle):
                   '[Mean Total/SQL:%s/%s] [SYSTEM:<%s>]') % \
                  (request.method, data['message_idt'], data['rc'], data['message'], qsize, dtime, sqld,
                   self.GetTotalDurationMean, self.StatSQLDurationMean, data['source_system'])
-        if data['rc'] in [200,429]:
+        if data['rc'] in [200, 429]:
             self.log.info(logmsg)
         else:
             logmsg += ' [input parms: %s]' % request.query
             self.log.warning(logmsg)
         self.calc_stat(data['rc'])
         return web.json_response(data, status=data['rc'])
+
     # POST
     async def post_record(self, request):
         start_time = time.monotonic()
@@ -112,14 +113,13 @@ class ApiHandler(LoadSwagger, WSStatistic, PAssertion, Oracle):
             data = outward_parms_preprocessing(request.method, data, self.parms)
             sqld = db_resp['sqld']
 
-
         dtime = round(time.monotonic() - start_time, 4)
         self.PostTotalDurationMean = round((1.8 * self.PostTotalDurationMean + 0.2 * dtime) / 2, 4)
         logmsg = ('%s: [IDT:%s] [rc:%s; %s] [Queue:%s] [Request Total/PLSQL:%s/%s] [Mean Total/PLSQL:%s/%s] '
                   '[SYSTEM:<%s>]') % \
                  (request.method, data['message_idt'], data['rc'], data['message'], qsize, dtime, sqld,
                   self.PostTotalDurationMean, self.StatPLSQLDurationMean, data['source_system'])
-        if data['rc'] in [200,429]:
+        if data['rc'] in [200, 429]:
             self.log.info(logmsg)
         else:
             logmsg += ' [input parms: %s]' % request.query
@@ -144,10 +144,10 @@ class ApiHandler(LoadSwagger, WSStatistic, PAssertion, Oracle):
             db_state_str = 'Down'
         qsize = self.qcashe.currsize
         tmon = time.monotonic()
-        up_time_in_min = round(( tmon - self.StatstartStatTime) / 60, 1)
-        last_successInMin = round((tmon - self.StatlastSuccess) / 60, 1)
-        if last_successInMin == up_time_in_min:
-            last_successInMin = -1
+        up_time_in_min = round((tmon - self.StatstartStatTime) / 60, 1)
+        last_success_in_min = round((tmon - self.StatlastSuccess) / 60, 1)
+        if last_success_in_min == up_time_in_min:
+            last_success_in_min = -1
         last_error_in_min = round((tmon - self.StatlastError) / 60, 1)
         if last_error_in_min == up_time_in_min:
             last_error_in_min = -1
@@ -156,7 +156,7 @@ class ApiHandler(LoadSwagger, WSStatistic, PAssertion, Oracle):
             'message': 'Service is up',
             'dbConnectionStatus': db_state_str,
             'upTimeInMin': up_time_in_min,
-            'lastSuccessInMin': last_successInMin,
+            'lastSuccessInMin': last_success_in_min,
             'lastErrorInMin': last_error_in_min,
             'meanGetTotalDurationInSec': self.GetTotalDurationMean,
             'meanPostTotalDurationInSec': self.PostTotalDurationMean,
