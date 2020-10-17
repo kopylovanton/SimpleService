@@ -1,5 +1,5 @@
 [Unit]
-Description=Template api daemon
+Description=api-+-template-+ daemon
 After=network.target
 
 [Service]
