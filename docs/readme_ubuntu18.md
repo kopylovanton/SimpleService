@@ -15,22 +15,21 @@ $ adduser flask
 $ usermod -aG sudo flask
 ```
 --------------------------------------------------------
-Установить python 3.6
+Установить python 3.6+
 ```shell script
 su flask
 cd ~/
 sudo apt update
 sudo apt install python3-pip python3-dev build-essential libssl-dev libffi-dev python3-setuptools
 sudo apt install python3-venv
-sudo apt install python-pip
 ```
 --------------------------------------------------------
 Настроить окружение python для сервисов 
 ```shell script
 mkdir ~/api
 cd ~/api
-mkdir ~/socket
-python3.6 -m venv python-api-env
+mkdir ~/api/socket
+python3 -m venv python-api-env
 ```
 --------------------------------------------------------
 Установить клиент Oracle
@@ -42,22 +41,23 @@ python3.6 -m venv python-api-env
 - [загрузить на сервер Basic клиент](https://www.oracle.com/database/technologies/instant-client/linux-x86-64-downloads.html)
 ```shell script
 sudo apt-get install alien
-sudo alien -i oracle-instantclient19.5-basic-19.5.0.0.0-1.x86_64.rpm 
+sudo alien -i oracle-instantclient19.8-basic-19.8.0.0.0-1.x86_64.rpm
 sudo apt-get install libaio1
-export LD_LIBRARY_PATH=/usr/lib/oracle/19.5/client64/lib/${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
+ls -l /usr/lib/oracle/19.8/client64/lib/
+export LD_LIBRARY_PATH=/usr/lib/oracle/19.8/client64/lib/${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
 sudo ldconfig
 ```
 
 - создать файл, добавить в него две записи и сохранить
 ```shell script
 sudo nano /etc/profile.d/oracle.sh && sudo chmod o+r /etc/profile.d/oracle.sh
-export ORACLE_HOME=/usr/lib/oracle/19.5/client64
+export ORACLE_HOME=/usr/lib/oracle/19.8/client64
 export PATH=$PATH:$ORACLE_HOME/bin
 ```
 
 - выполнить команды
 ```shell script
-sudo ln -s /usr/include/oracle/19.5/client $ORACLE_HOME/include
+sudo ln -s /usr/include/oracle/19.8/client $ORACLE_HOME/include
 sudo mkdir  -p /etc/orcale
 ```
 
@@ -78,6 +78,41 @@ sudo systemctl enable nginx
 systemctl status nginx
 ```
 
+####поменять настройки логирования access_log для исключения из лога успешно проведенных операций
+```shell script
+$ sudo nano /etc/nginx/nginx.conf
+```
+
+
+заменить
+```
+access_log /path/to/access.log
+```
+на
+
+```
+map $status $loggable {
+    ~^[23]  0;
+    default 1;
+}
+
+access_log /var/log/nginx/access.log combined if=$loggable;
+```
+проверить конфигурацию nginx
+
+```shell script
+$ sudo nginx -t
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+```
+
+
+рестартовать nginx
+```shell script
+sudo systemctl restart nginx
+```
+
+
 --------------------------------------------------------
 Настройка файревола
 ```shell script
@@ -89,9 +124,9 @@ sudo ufw enable
 ```
 
 --------------------------------------------------------
-Добвить пользователя flask в группу www-data
+Добвить пользователя www-data в группу flask
 ```shell script
-sudo usermod -a -G nginx flask
+sudo usermod -a -G flask www-data
 ```
 --------------------------------------------------------
 после установке Nginx с помощью браузера по IP адресу сервера можно увидеть стандартное приветственное окно 
@@ -100,12 +135,12 @@ sudo usermod -a -G nginx flask
 
 примеры команд администрирование Nginx
 1. Управление Nginx
-* Запуск
+* Остановка
 ```shell script
 sudo systemctl stop nginx
 ```
 
-* Остановка
+* Запуск
 ```shell script
 sudo systemctl start nginx
 ```

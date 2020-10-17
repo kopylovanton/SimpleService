@@ -114,6 +114,21 @@ $ sudo nano /etc/nginx/nginx.conf
 include /etc/nginx/sites-available/*;
 ```
 
+поменять настройки логирования access_log для исключения из лога успешно проведенных операций
+заменить
+```
+access_log /path/to/access.log
+```
+на
+
+```
+map $status $loggable {
+    ~^[23]  0;
+    default 1;
+}
+
+access_log /var/log/nginx/access.log combined if=$loggable;
+```
 проверить конфигурацию nginx
 
 ```shell script
