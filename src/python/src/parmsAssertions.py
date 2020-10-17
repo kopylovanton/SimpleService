@@ -10,14 +10,13 @@ from .logconf import LoguruLogger
 class PAssertion(LoguruLogger):
     def __init__(self, lpatch, enccp='utf-8'):
         super().__init__(lpatch)
-        with self.log.catch('Error load service configurations:', onerror=lambda _: sys.exit(1)):
-            self.cpage = enccp
-            parms = self._load_service_parms(lpatch)
-            self.parms_assertions = {}
-            self.formats_assertions = {}
-            self.required_fields = {}
-            self.allowedReqType = ['GET', 'POST']
-            self.log.info('Assertions initialized')
+        self.cpage = enccp
+        parms = self._load_service_parms(lpatch)
+        self.parms_assertions = {}
+        self.formats_assertions = {}
+        self.required_fields = {}
+        self.allowedReqType = ['GET', 'POST']
+        self.log.info('Assertions initialized')
 
         for req_type in self.allowedReqType:
             self.required_fields[req_type] = parms.get('SPECIFICATIONS', {}). \
@@ -83,7 +82,7 @@ class PAssertion(LoguruLogger):
 
     def _load_service_parms(self, lpatch):
         # ************* Load Parms
-        with self.log.catch(onerror=lambda _: sys.exit(1)):
+        with self.log.catch(message='Error loading config_service.yaml',onerror=lambda _: sys.exit(1)):
             with io.open(lpatch + 'config/config_service.yaml', encoding=self.cpage) as file:
                 parms = yaml.load(file, Loader=yaml.FullLoader)
         return parms

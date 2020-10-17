@@ -10,20 +10,21 @@ from .logconf import LoguruLogger
 class LoadSwagger(LoguruLogger):
     def __init__(self, lpatch):
         super().__init__(lpatch)
-        with self.log.catch('Error load swagger configuration', onerror=lambda _: sys.exit(1)):
-            self.cpage = 'utf-8'
-            self.version = __version__
-            self.parms = self._load_assert_parms(lpatch)
+        self.cpage = 'utf-8'
+        self.version = __version__
+        self.parms = self._load_assert_parms(lpatch)
+        with self.log.catch(message='Error load swagger configuration', onerror=lambda _: sys.exit(1)):
             self._appy_assert()
-            self.maxQueueSize = self.parms.get('maxQueueSize', 10000)
-            self.ACCESS_LOG = self.parms.get('ACCESS_LOG', True)
+        self.maxQueueSize = self.parms.get('maxQueueSize', 10000)
+        self.ACCESS_LOG = self.parms.get('ACCESS_LOG', True)
+        with self.log.catch(message='Error load swagger configuration', onerror=lambda _: sys.exit(1)):
             self.swagger_descriptions = self._prepare_doc(self.parms, lpatch)
-            self.swagger_url = '/' + self.parms['URL'] + '/swagger'
-            self.swaggerEnabled = self.parms.get('SWAGER_ENABLED', True)
-            self.postOutField = self.parms.get('SPECIFICATIONS', {}).get('POST', {}).get('RESPONSE_FIELDS', {}).keys()
-            self.apiurl = '/' + self.parms['URL'] + '/' + self.parms['SPECIFICATIONS']['VERSION']
-            self.release = self.parms['SPECIFICATIONS']['SERVICE_DESCRITION']['RELEASE']
-            self.log.info('Swagger initialized')
+        self.swagger_url = '/' + self.parms['URL'] + '/swagger'
+        self.swaggerEnabled = self.parms.get('SWAGER_ENABLED', True)
+        self.postOutField = self.parms.get('SPECIFICATIONS', {}).get('POST', {}).get('RESPONSE_FIELDS', {}).keys()
+        self.apiurl = '/' + self.parms['URL'] + '/' + self.parms['SPECIFICATIONS']['VERSION']
+        self.release = self.parms['SPECIFICATIONS']['SERVICE_DESCRITION']['RELEASE']
+        self.log.info('Swagger initialized')
 
     def _load_assert_parms(self, lpatch):
         # ************* Load Parms

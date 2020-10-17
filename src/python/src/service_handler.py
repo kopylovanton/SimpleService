@@ -57,7 +57,7 @@ class ApiHandler(LoadSwagger, WSStatistic, PAssertion, Oracle):
     async def get_record(self, request):
         start_time = time.monotonic()
         sqld = '-'
-        with self.log.catch('Request parce error:'):
+        with self.log.catch(message='Request parce error:'):
             data, qsize = self.base_request(request)
         data['records'] = []
         # GET DB Call
@@ -93,7 +93,7 @@ class ApiHandler(LoadSwagger, WSStatistic, PAssertion, Oracle):
     async def post_record(self, request):
         start_time = time.monotonic()
         sqld = '-'
-        with self.log.catch('Request parce error:'):
+        with self.log.catch(message='Request parce error:'):
             data, qsize = self.base_request(request)
 
         # DB Call
