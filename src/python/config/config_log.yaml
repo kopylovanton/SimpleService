@@ -5,11 +5,8 @@ loguruconf:
       sink: "./log/+-template-+.log",
       enqueue: True,
       serialize: False,
-      rotation: "100 MB",
-      retention: 10,
+      rotation: "50 MB",
+      retention: 20,
       compression: "zip",
-      level: "INFO",
-      diagnose: False,
-      catch: False
+      level: "INFO"
     }
-stderr: True

@@ -8,16 +8,15 @@ from loguru import logger
 
 class LoguruLogger(object):
     def __init__(self, lpatch=str(pathlib.Path().absolute()) + '/'):
+        self.log = logger
         self.log = self._get_logger(lpatch)
 
-    @staticmethod
-    def _get_logger(lpatch):
-        with logger.catch(onerror=lambda _: sys.exit(1)):
+    def _get_logger(self, lpatch):
+        with self.log.catch(message='Error load config/config_log.yaml', onerror=lambda _: sys.exit(1)):
             with io.open(lpatch + 'config/config_log.yaml', encoding='utf-8') as file:
                 _logparms = yaml.load(file, Loader=yaml.FullLoader)
-        if _logparms.get('loguruconf', []).get('handlers', False):
-            logger.configure(**_logparms['loguruconf'])
-        if _logparms.get('stderr', False):
-            logger.add(sys.stderr)
+                if _logparms['loguruconf']['handlers'] is not None:
+                    for log_parms in _logparms['loguruconf']['handlers']:
+                        self.log.add(**log_parms)
         logger.info('logger configuration imported' + str(_logparms))
         return logger

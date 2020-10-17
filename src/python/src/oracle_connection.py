@@ -21,6 +21,7 @@ from .logconf import LoguruLogger
 class Oracle(LoguruLogger):
 
     def __init__(self, lpatch, enccp: str = 'utf-8'):
+        self.db_connected = False
         super().__init__(lpatch)
         self.cpage = enccp
         self.db_connected = False
@@ -38,7 +39,6 @@ class Oracle(LoguruLogger):
         self.encoding = self.parmsdb['DB_ENCODING']
         self.current_schema = self.parmsdb['CURRENT_SCHEMA']
         self.callTimeout = self.parmsdb['DB_EXECUTE_TIMEOUT']
-        self.db_connected = False
         self.connPolSize = int(self.parmsdb['DB_CONN_POOL'])
         self.StatSQLDurationMean = 0
         self.StatPLSQLDurationMean = 0

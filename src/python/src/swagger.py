@@ -36,14 +36,14 @@ class LoadSwagger(LoguruLogger):
 
     def _appy_assert(self):
         for p in ['URL', 'ACCESS_LOG', 'SQL_GET', 'MAX_FETCH_ROWS', 'SPECIFICATIONS']:
-            if len(str(self.parms[p])) < 1:
+            if len(str(self.parms.get(p, ''))) < 1:
                 self.log.critical('/config/config-service.yaml -> %s does not defined' % p)
-                raise
+                raise ValueError
 
     def _prepare_doc(self, parms, lpatch):
-        with self.log.catch(onerror=lambda _: sys.exit(1)):
-            with io.open(lpatch + 'config/swagger_template.yaml', encoding=self.cpage) as file:
-                descritpion = yaml.load(file, Loader=yaml.FullLoader)
+
+        with io.open(lpatch + 'config/swagger_template.yaml', encoding=self.cpage) as file:
+            descritpion = yaml.load(file, Loader=yaml.FullLoader)
         self.log.info('swagger_template.yaml loaded')
 
         url = '/%s/V1/{message_idt}/{source_system}' % self.parms['URL']
