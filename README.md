@@ -41,7 +41,7 @@ Technical Requirements
 - Oracle Instant Client
 - systemd
 
-Нагрузка на сервер (1CPU/2GB) при обработке (~100 запросов в секунду при длительности одного запросо 200-300мс):
+Нагрузка на сервер (1CPU/2GB) при обработке ~100 запросов в секунду (длительность одного запроса 200-300мс):
 
 [htop]: https://i.ibb.co/7kJKTQF/htop.png
 ![image][htop] 
