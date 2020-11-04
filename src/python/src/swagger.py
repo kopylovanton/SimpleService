@@ -35,9 +35,17 @@ class LoadSwagger(LoguruLogger):
         return p
 
     def _appy_assert(self):
-        for p in ['URL', 'ACCESS_LOG', 'SQL_GET', 'MAX_FETCH_ROWS', 'SPECIFICATIONS']:
+        for p in ['URL', 'ACCESS_LOG', 'MAX_FETCH_ROWS', 'SPECIFICATIONS']:
             if len(str(self.parms.get(p, ''))) < 1:
                 self.log.critical('/config/config-service.yaml -> %s does not defined' % p)
+                raise ValueError
+        if self.parms.get('GET_ENABLED', False):
+            if len(str(self.parms.get('SQL_GET', ''))) < 1:
+                self.log.critical('/config/config-service.yaml -> %s does not defined' % 'SQL_GET')
+                raise ValueError
+        if self.parms.get('POST_ENABLED', False):
+            if len(str(self.parms.get('PROC_POST', ''))) < 1:
+                self.log.critical('/config/config-service.yaml -> %s does not defined' % 'PROC_POST')
                 raise ValueError
 
     def _prepare_doc(self, parms, lpatch):
@@ -46,7 +54,7 @@ class LoadSwagger(LoguruLogger):
             descritpion = yaml.load(file, Loader=yaml.FullLoader)
         self.log.info('swagger_template.yaml loaded')
 
-        url = '/%s/V1/{message_idt}/{source_system}' % self.parms['URL']
+        url = '/%s/v1/{message_idt}/{source_system}' % self.parms['URL']
 
         getfield = parms.get('SPECIFICATIONS', {}).get('GET', {}).get('INPUT_REQUIRED_FIELDS', {})
         for f in getfield:
@@ -65,4 +73,17 @@ class LoadSwagger(LoguruLogger):
             descritpion['components']['schemas']['post_required_out']['required'].append(f)
             descritpion['components']['schemas']['post_required_out']['properties'][f] = \
                 {'type': 'string', 'example': postfield[f]}
+
+        # description
+        descritpion['info']['version'] = parms.get('SPECIFICATIONS', {}).get('SERVICE_DESCRITION', {}).get('RELEASE', {})
+        descritpion['info']['title'] = parms.get('SPECIFICATIONS', {}).get('SERVICE_DESCRITION', {}).get('TITLE', {})
+        descritpion['info']['description'] = parms.get('SPECIFICATIONS', {}).get('SERVICE_DESCRITION', {}).get('DESCRITION', {})
+        # tags
+        descritpion['tags'][0]['name'] = parms.get('SPECIFICATIONS', {}).get('SERVICE_DESCRITION', {}).get('TITLE', {})
+        descritpion['paths'][url]['post']['tags'][0]=parms.get('SPECIFICATIONS', {}).get('SERVICE_DESCRITION', {}).get('TITLE', {})
+        descritpion['paths'][url]['get']['tags'][0]=parms.get('SPECIFICATIONS', {}).get('SERVICE_DESCRITION', {}).get('TITLE', {})
+        # service descriptions
+        descritpion['paths'][url]['get']['description']=parms.get('SPECIFICATIONS', {}).get('GET', {}).get('DESCRITION', {})
+        descritpion['paths'][url]['post']['description']=parms.get('SPECIFICATIONS', {}).get('POST', {}).get('DESCRITION', {})
+
         return descritpion

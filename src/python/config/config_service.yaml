@@ -1,19 +1,18 @@
-# port set up into nginx config file
+# WS http path = <host>:<port>/<URL>/<VERSION>
+# do not change after run ./setup.sh
 URL : '+-template-+'
 
 maxQueueSize: 200 # if Queue more than pams value service return 429 RC Too Many Requests
-ACCESS_LOG: False # access log from aiohttp. use nginx access log by default
+MAX_FETCH_ROWS : 1000 # Max rows for result. It depends on server's memory size.
 
-# WS http path = <host>:<port>/<URL>/<VERSION>
 GET_ENABLED: True
 POST_ENABLED: True
-# WS status check http path <host>:<port>/<url>/<VERISON>/status
-GET_STATUS_ENABLED: True
 # WS documentation and swagger file http path <host>:<port>/<url>/<VERSION>/swagger
 SWAGER_ENABLED: True
+# WS status check http path <host>:<port>/<url>/<VERISON>/status
+GET_STATUS_ENABLED: True
 
-# Max rows for result. It depends on server's memory size.
-MAX_FETCH_ROWS : 1000
+ACCESS_LOG: False # access log from aiohttp. use nginx access log by default
 
 # get data SQL
 SQL_GET : >
@@ -25,8 +24,8 @@ SQL_GET : >
       union all
     SELECT 'Hello3' as parm1, 'World3' as parm2 FROM DUAL
         where 3 > :inp3 and 1=1
-      union all
-    SELECT sleep(0.1,0.3) as parm1, 'World3' as parm2 FROM DUAL
+#      union all
+#    SELECT sleep(0.1,0.3) as parm1, 'World3' as parm2 FROM DUAL
 
 PROC_POST: >
     DECLARE
@@ -40,14 +39,13 @@ PROC_POST: >
       :addRefId := -1;
       :addRC := '96';
     END;
-#SELECT 'Hello' into :parm1 FROM DUAL where 3 > input1 and 1=1;
 
 SPECIFICATIONS:
 # WS http path = <host>:<port>/<URL>/<VERSION>
-  VERSION: "V1"
+  VERSION: "v1"
   SERVICE_DESCRITION:
-    TITLE: "Simple Service API"
-    DESCRITION: "Template service configuration"
+    TITLE: "Simple Service API v1"
+    DESCRITION: "Template service configuration v1"
     RELEASE: "2020_10_15"
   GET:
     DESCRITION: "Get couple rows from dual"

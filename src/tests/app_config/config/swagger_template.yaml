@@ -6,11 +6,11 @@
 
   tags:
     - name: SimpleService
-      description: Template service configuration
+      description: perform service
     - name: HealthCheck
       description: Health check informations
   paths:
-     /+-template-+/V1/{message_idt}/{source_system}:
+     /+-template-+/v1/{message_idt}/{source_system}:
       get:
         tags:
           - SimpleService
@@ -105,7 +105,7 @@
               application/json:
                 schema:
                   $ref: '#/components/schemas/post_required_out'
-     /+-template-+/V1/status:
+     /+-template-+/v1/status:
       get:
         tags:
           - HealthCheck

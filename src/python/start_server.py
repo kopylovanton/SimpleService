@@ -12,38 +12,38 @@ import src
 
 
 def init_app(lpatch=str(pathlib.Path().absolute()) + '/'):
-    init_handler = src.ApiHandler(lpatch)
-    init_app = web.Application()
+    new_handler = src.ApiHandler(lpatch)
+    new_app = web.Application()
+    with new_handler.log.catch('Error routing configure', onerror=lambda _: sys.exit(1)):
+        if new_handler.parms.get('GET_STATUS_ENABLED', False):
+            new_app.add_routes([web.get(new_handler.apiurl + '/status', new_handler.get_stat)])
+        else:
+            del new_handler.swagger_descriptions['paths'][new_handler.apiurl + '/status']
+            del new_handler.swagger_descriptions['components']['schemas']['status_out']
 
-    if init_handler.parms.get('GET_STATUS_ENABLED', False):
-        init_app.add_routes([web.get(init_handler.apiurl + '/status', init_handler.get_stat)])
-    else:
-        del init_handler.swagger_descriptions['paths'][init_handler.apiurl + '/status']
-        del init_handler.swagger_descriptions['components']['schemas']['status_out']
+        if new_handler.parms.get('GET_ENABLED', False):
+            new_app.add_routes([web.get(new_handler.apiurl + '/{message_idt}/{source_system}', new_handler.get_record)])
+        else:
+            del new_handler.swagger_descriptions['paths'][new_handler.apiurl + '/{message_idt}/{source_system}']['get']
+            del new_handler.swagger_descriptions['components']['schemas']['get_required_out']
 
-    if init_handler.parms.get('GET_ENABLED', False):
-        init_app.add_routes([web.get(init_handler.apiurl + '/{message_idt}/{source_system}', init_handler.get_record)])
-    else:
-        del init_handler.swagger_descriptions['paths'][init_handler.apiurl + '/{message_idt}/{source_system}']['get']
-        del init_handler.swagger_descriptions['components']['schemas']['get_required_out']
+        if new_handler.parms.get('POST_ENABLED', False):
+            new_app.add_routes(
+                [web.post(new_handler.apiurl + '/{message_idt}/{source_system}', new_handler.post_record)])
+        else:
+            del new_handler.swagger_descriptions['paths'][new_handler.apiurl + '/{message_idt}/{source_system}']['post']
+            del new_handler.swagger_descriptions['components']['schemas']['post_required_out']
+        if new_handler.swaggerEnabled:
+            from aiohttp_swagger import setup_swagger
 
-    if init_handler.parms.get('POST_ENABLED', False):
-        init_app.add_routes(
-            [web.post(init_handler.apiurl + '/{message_idt}/{source_system}', init_handler.post_record)])
-    else:
-        del init_handler.swagger_descriptions['paths'][init_handler.apiurl + '/{message_idt}/{source_system}']['post']
-        del init_handler.swagger_descriptions['components']['schemas']['post_required_out']
-    if init_handler.swaggerEnabled:
-        from aiohttp_swagger import setup_swagger
+            setup_swagger(new_app, swagger_url=new_handler.swagger_url, swagger_info=new_handler.swagger_descriptions,
+                          ui_version=3)
 
-        setup_swagger(init_app, swagger_url=init_handler.swagger_url, swagger_info=init_handler.swagger_descriptions,
-                      ui_version=3)
-
-    init_handler.log.info(
+    new_handler.log.info(
         'Start process worker at URL = <host>:<port>%s , template version: %s , configurations release %s' %
-        (init_handler.apiurl, init_handler.version, init_handler.release))
+        (new_handler.apiurl, new_handler.version, new_handler.release))
 
-    return init_app, init_handler
+    return new_app, new_handler
 
 
 def get_sock(socket_path):
@@ -65,7 +65,7 @@ if __name__ == "__main__":
     parser.add_argument('--path')
     parser.add_argument('--port')
     args = parser.parse_args()
-    with handler.log.catch(message='Error create socket',onerror=lambda _: sys.exit(1)):
+    with handler.log.catch(message='Error create socket', onerror=lambda _: sys.exit(1)):
         serv_sock = get_sock(args.path)
     try:
         if handler.ACCESS_LOG:

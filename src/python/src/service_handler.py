@@ -21,7 +21,8 @@ class ApiHandler(LoadSwagger, WSStatistic, PAssertion, Oracle):
 
     # preprocess
     def base_request(self, request):
-        data = {'message_idt': request.match_info.get('message_idt', 'unknown'),
+        data = {'method':  self.parms['URL'] ,
+                'message_idt': request.match_info.get('message_idt', 'unknown'),
                 'source_system': request.match_info.get('source_system', 'unknown'),
                 'rc': 200,
                 'message': 'Success',
@@ -88,6 +89,14 @@ class ApiHandler(LoadSwagger, WSStatistic, PAssertion, Oracle):
                 data['rc'] = 500
                 data['message'] = 'Server error'
 
+        try:
+            resp = web.json_response(data, status=data['rc'])
+        except TypeError as e:
+            data['rc']='500'
+            data['message'] = 'Response serialize error'
+            data['records'] = []
+            resp = web.json_response(data, status=data['rc'])
+
         dtime = round(time.monotonic() - start_time, 4)
         self.GetTotalDurationMean = round((1.8 * self.GetTotalDurationMean + 0.2 * dtime) / 2, 4)
         logmsg = ('%s: [IDT:%s] [rc:%s; %s] [Queue:%s] [Request Total/SQL:%s/%s] '
@@ -100,7 +109,8 @@ class ApiHandler(LoadSwagger, WSStatistic, PAssertion, Oracle):
             logmsg += ' [input parms: %s]' % request.query
             self.log.warning(logmsg)
         self.calc_stat(data['rc'])
-        return web.json_response(data, status=data['rc'])
+
+        return resp
 
     # POST
     async def post_record(self, request):
@@ -138,6 +148,13 @@ class ApiHandler(LoadSwagger, WSStatistic, PAssertion, Oracle):
             else:
                 data['rc'] = 500
                 data['message'] = 'Server error'
+        try:
+            resp = web.json_response(data, status=data['rc'])
+        except TypeError as e:
+            data['rc']='500'
+            data['message'] = 'Response serialize error'
+            resp = web.json_response(data, status=data['rc'])
+
         dtime = round(time.monotonic() - start_time, 4)
         self.PostTotalDurationMean = round((1.8 * self.PostTotalDurationMean + 0.2 * dtime) / 2, 4)
         logmsg = ('%s: [IDT:%s] [rc:%s; %s] [Queue:%s] [Request Total/PLSQL:%s/%s] [Mean Total/PLSQL:%s/%s] '
@@ -150,7 +167,7 @@ class ApiHandler(LoadSwagger, WSStatistic, PAssertion, Oracle):
             logmsg += ' [input parms: %s]' % request.query
             self.log.warning(logmsg)
         self.calc_stat(data['rc'])
-        return web.json_response(data, status=data['rc'])
+        return resp
 
     # Service Status (GET)
     async def get_stat(self, request):

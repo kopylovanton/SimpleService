@@ -44,7 +44,7 @@ PROC_POST: >
 
 SPECIFICATIONS:
 # WS http path = <host>:<port>/<URL>/<VERSION>
-  VERSION: "V1"
+  VERSION: "v1"
   SERVICE_DESCRITION:
     TITLE: "Simple Service API"
     DESCRITION: "Template service configuration"
