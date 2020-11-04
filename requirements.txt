@@ -2,6 +2,6 @@ aiohttp[speedups]
 aiohttp-swagger[performance]
 cx-Oracle
 PyYAML
-cryptography
+cryptography>=3.2
 loguru
 cachetools
