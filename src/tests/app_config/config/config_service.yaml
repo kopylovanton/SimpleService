@@ -55,7 +55,7 @@ SPECIFICATIONS:
       inp1: "inp1 descr - date in YYYYMMDD format "
       inp2: "inp2 descr - Set '1-3' for successful get "
       inp3: "inp3 descr - Set '1-2' for successful get "
-    RESPONCE_FIELDS:
+    RESPONSE_FIELDS:
       parm1: "parm1 descr"
       parm2: "parm2 descr"
   POST:

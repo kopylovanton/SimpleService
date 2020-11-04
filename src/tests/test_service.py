@@ -99,7 +99,7 @@ get_testdata = [
         'upTimeInMin': 0.0,
         'workQueue': 0,
         'configRelease': '2020_01_21',
-        'srcVersion': '2020_10_15'
+        'srcVersion': '2020_11_04'
       }
      ),
     ]
