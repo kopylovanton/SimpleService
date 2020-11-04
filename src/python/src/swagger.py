@@ -56,23 +56,32 @@ class LoadSwagger(LoguruLogger):
 
         url = '/%s/v1/{message_idt}/{source_system}' % self.parms['URL']
 
-        getfield = parms.get('SPECIFICATIONS', {}).get('GET', {}).get('INPUT_REQUIRED_FIELDS', {})
-        for f in getfield:
-            descritpion['paths'][url]['get']['parameters'].append(
-                {'in': 'query', 'name': f, 'description': getfield[f], 'required': True,
-                 'schema': {'type': 'string'}}
-            )
-        postfield = parms.get('SPECIFICATIONS', {}).get('POST', {}).get('INPUT_REQUIRED_FIELDS', {})
-        for f in postfield:
-            descritpion['paths'][url]['post']['parameters'].append(
-                {'in': 'query', 'name': f, 'description': postfield[f], 'required': True,
-                 'schema': {'type': 'string'}}
-            )
-        postfield = parms.get('SPECIFICATIONS', {}).get('POST', {}).get('RESPONSE_FIELDS', {})
-        for f in postfield:
-            descritpion['components']['schemas']['post_required_out']['required'].append(f)
-            descritpion['components']['schemas']['post_required_out']['properties'][f] = \
-                {'type': 'string', 'example': postfield[f]}
+        if self.parms.get('GET_ENABLED', False):
+            getfield = parms['SPECIFICATIONS']['GET']['INPUT_REQUIRED_FIELDS']
+            for f in getfield:
+                descritpion['paths'][url]['get']['parameters'].append(
+                    {'in': 'query', 'name': f, 'description': getfield[f], 'required': True,
+                     'schema': {'type': 'string'}}
+                )
+            getfield = parms['SPECIFICATIONS']['GET']['RESPONSE_FIELDS']
+            descritpion['components']['schemas']['get_required_out']['properties']['records']['required']=[]
+            descritpion['components']['schemas']['get_required_out']['properties']['records']['properties']= {}
+            for f in getfield:
+                descritpion['components']['schemas']['get_required_out']['properties']['records']['required'].append(f)
+                descritpion['components']['schemas']['get_required_out']['properties']['records']['properties'][f] = \
+                    {'type': 'string', 'example': 'value', 'description': getfield[f]}
+        if self.parms.get('POST_ENABLED', False):
+            postfield = parms['SPECIFICATIONS']['POST']['INPUT_REQUIRED_FIELDS']
+            for f in postfield:
+                descritpion['paths'][url]['post']['parameters'].append(
+                    {'in': 'query', 'name': f, 'description': postfield[f], 'required': True,
+                     'schema': {'type': 'string'}}
+                )
+            postfield = parms['SPECIFICATIONS']['POST']['RESPONSE_FIELDS']
+            for f in postfield:
+                descritpion['components']['schemas']['post_required_out']['required'].append(f)
+                descritpion['components']['schemas']['post_required_out']['properties'][f] = \
+                    {'type': 'string', 'example': postfield[f]}
 
         # description
         descritpion['info']['version'] = parms.get('SPECIFICATIONS', {}).get('SERVICE_DESCRITION', {}).get('RELEASE', {})
