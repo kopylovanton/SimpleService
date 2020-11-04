@@ -21,7 +21,7 @@ class ApiHandler(LoadSwagger, WSStatistic, PAssertion, Oracle):
 
     # preprocess
     def base_request(self, request):
-        data = {'method':  self.parms['URL'] ,
+        data = {'method': self.parms['URL'],
                 'message_idt': request.match_info.get('message_idt', 'unknown'),
                 'source_system': request.match_info.get('source_system', 'unknown'),
                 'rc': 200,
@@ -92,9 +92,10 @@ class ApiHandler(LoadSwagger, WSStatistic, PAssertion, Oracle):
         try:
             resp = web.json_response(data, status=data['rc'])
         except TypeError as e:
-            data['rc']='500'
+            data['rc'] = '500'
             data['message'] = 'Response serialize error'
             data['records'] = []
+            self.log.error('Response serialize error: %s' % e)
             resp = web.json_response(data, status=data['rc'])
 
         dtime = round(time.monotonic() - start_time, 4)
@@ -151,8 +152,9 @@ class ApiHandler(LoadSwagger, WSStatistic, PAssertion, Oracle):
         try:
             resp = web.json_response(data, status=data['rc'])
         except TypeError as e:
-            data['rc']='500'
+            data['rc'] = '500'
             data['message'] = 'Response serialize error'
+            self.log.error('Response serialize error: %s' % e)
             resp = web.json_response(data, status=data['rc'])
 
         dtime = round(time.monotonic() - start_time, 4)
