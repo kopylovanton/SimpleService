@@ -22,6 +22,8 @@ $ su flask
 $ cd ~/
 $ sudo yum install python3-pip
 $ sudo yum install gcc
+$ python3 -m pip install --upgrade pip
+$ pip3 install wheel
 $ sudo yum install nano
 ```
 --------------------------------------------------------
