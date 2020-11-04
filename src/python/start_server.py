@@ -14,11 +14,11 @@ import src
 def init_app(lpatch=str(pathlib.Path().absolute()) + '/'):
     new_handler = src.ApiHandler(lpatch)
     new_app = web.Application()
-    with new_handler.log.catch('Error routing configure', onerror=lambda _: sys.exit(1)):
+    with new_handler.log.catch(message='Error routing configure', onerror=lambda _: sys.exit(1)):
         if new_handler.parms.get('GET_STATUS_ENABLED', False):
-            new_app.add_routes([web.get(new_handler.apiurl + '/status', new_handler.get_stat)])
+            new_app.add_routes([web.get('/'+new_handler.parms['URL']  + '/status', new_handler.get_stat)])
         else:
-            del new_handler.swagger_descriptions['paths'][new_handler.apiurl + '/status']
+            del new_handler.swagger_descriptions['paths']['/'+new_handler.parms['URL'] + '/status']
             del new_handler.swagger_descriptions['components']['schemas']['status_out']
 
         if new_handler.parms.get('GET_ENABLED', False):

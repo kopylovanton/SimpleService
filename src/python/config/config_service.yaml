@@ -7,9 +7,9 @@ MAX_FETCH_ROWS : 1000 # Max rows for result. It depends on server's memory size.
 
 GET_ENABLED: True
 POST_ENABLED: True
-# WS documentation and swagger file http path <host>:<port>/<url>/<VERSION>/swagger
+# WS documentation and swagger file http path <host>:<port>/<url>/swagger
 SWAGER_ENABLED: True
-# WS status check http path <host>:<port>/<url>/<VERISON>/status
+# WS status check http path <host>:<port>/<url>/status
 GET_STATUS_ENABLED: True
 
 ACCESS_LOG: False # access log from aiohttp. use nginx access log by default
@@ -41,7 +41,7 @@ PROC_POST: >
     END;
 
 SPECIFICATIONS:
-# WS http path = <host>:<port>/<URL>/<VERSION>
+# WS  <host>:<port>/<URL>/<VERSION>
   VERSION: "v1"
   SERVICE_DESCRITION:
     TITLE: "Simple Service API v1"
@@ -64,9 +64,9 @@ SPECIFICATIONS:
     RESPONSE_FIELDS:
       addRC: "some add resp"
       addRefId: "actual sleep time in sec"
+
 # Assertions [OPTIONAL]
 # if assertions does not exists - all values is allowed
-
 #allowed only if in list - can be removed
 ASSERTIONS_PARMS:
   GET: # REST method name

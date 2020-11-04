@@ -54,7 +54,8 @@ class LoadSwagger(LoguruLogger):
             descritpion = yaml.load(file, Loader=yaml.FullLoader)
         self.log.info('swagger_template.yaml loaded')
 
-        url = '/%s/v1/{message_idt}/{source_system}' % self.parms['URL']
+        url = '/%s/v1/{message_idt}/{source_system}' % parms['URL']
+        new_url = '/%s/%s/{message_idt}/{source_system}' % (parms['URL'],parms['SPECIFICATIONS']['VERSION'])
 
         if self.parms.get('GET_ENABLED', False):
             getfield = parms['SPECIFICATIONS']['GET']['INPUT_REQUIRED_FIELDS']
@@ -95,4 +96,8 @@ class LoadSwagger(LoguruLogger):
         descritpion['paths'][url]['get']['description']=parms.get('SPECIFICATIONS', {}).get('GET', {}).get('DESCRITION', {})
         descritpion['paths'][url]['post']['description']=parms.get('SPECIFICATIONS', {}).get('POST', {}).get('DESCRITION', {})
 
+        #path rename
+        if new_url!= url:
+            descritpion['paths'][new_url] = descritpion['paths'][url].copy()
+            del descritpion['paths'][url]
         return descritpion

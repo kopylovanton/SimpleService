@@ -83,7 +83,7 @@ get_testdata = [
                   {'PARM1': '1', 'PARM2': 'World3'}]}
      ),
     #status
-    ('/+-template-+/v1/status', 200,
+    ('/+-template-+/status', 200,
      {'dbConfConPool': 10,
       'dbConfTimeout': 10000,
        'dbConnectionStatus': 'UP',
@@ -231,7 +231,7 @@ async def test_series(client):
     assert resp404.status == 404
     resp_swagger = await client[0].get('/+-template-+/swagger')
     assert resp_swagger.status == 200
-    resp_status = await client[0].get('/+-template-+/v1/status')
+    resp_status = await client[0].get('/+-template-+/status')
     assert resp_status.status == 200
     resp_get = await client[0].get('/+-template-+/v1/e78oghjfgfdf/system1?inp1=20200101&inp2=1&inp3=1')
     assert resp_get.status == 200

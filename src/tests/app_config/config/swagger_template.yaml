@@ -105,7 +105,7 @@
               application/json:
                 schema:
                   $ref: '#/components/schemas/post_required_out'
-     /+-template-+/v1/status:
+     /+-template-+/status:
       get:
         tags:
           - HealthCheck
