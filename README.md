@@ -67,7 +67,7 @@ URLs
 ```
 - <host>:<port>/<service name>/<VERSION> - адрес вызова сервиса
 
-- <host>:<port>/<service name>/<VERSION>/status - проверка состояния сервиса (рандомного воркера)
+- <host>:<port>/<service name>/status - проверка состояния сервиса (рандомного воркера)
 
 - <host>:<port>/<service name>/swagger - html страница с документацией и возможностью пробного вызова сервиса 
 ```
