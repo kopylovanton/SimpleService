@@ -1,6 +1,6 @@
 import io
 import sys
-
+import re
 import yaml
 
 from .__about__ import __version__
@@ -48,15 +48,29 @@ class LoadSwagger(LoguruLogger):
                 self.log.critical('/config/config-service.yaml -> %s does not defined' % 'PROC_POST')
                 raise ValueError
 
+    @staticmethod
+    def _find(element: str, fdict):
+        paths = element.replace('${', '').replace('}', '').split(".")
+        data = fdict
+        for i in range(0, len(paths)):
+            data = data.get(paths[i], {})
+        return str(data)
+
     def _prepare_doc(self, parms, lpatch):
 
         with io.open(lpatch + 'config/swagger_template.yaml', encoding=self.cpage) as file:
-            descritpion = yaml.load(file, Loader=yaml.FullLoader)
+            swagger_conf = file.read()
+
+        repl_pattern = re.findall(r'\${[a-zA-Z._-]+}', str(swagger_conf))
+        for p in repl_pattern:
+            new_s = self._find(p, parms)
+            self.log.debug('pattern find:' + p + ':' + new_s)
+            swagger_conf = swagger_conf.replace(p, new_s)
+
+        descritpion = yaml.load(swagger_conf, Loader=yaml.FullLoader)  # .load(file, Loader=yaml.FullLoader)
         self.log.info('swagger_template.yaml loaded')
 
-        url = '/%s/v1/{message_idt}/{source_system}' % parms['URL']
-        new_url = '/%s/%s/{message_idt}/{source_system}' % (parms['URL'],parms['SPECIFICATIONS']['VERSION'])
-
+        url = '/' + parms['URL'] + '/' + parms['SPECIFICATIONS']['VERSION'] + '/{message_idt}/{source_system}'
         if self.parms.get('GET_ENABLED', False):
             getfield = parms['SPECIFICATIONS']['GET']['INPUT_REQUIRED_FIELDS']
             for f in getfield:
@@ -65,8 +79,8 @@ class LoadSwagger(LoguruLogger):
                      'schema': {'type': 'string'}}
                 )
             getfield = parms['SPECIFICATIONS']['GET']['RESPONSE_FIELDS']
-            descritpion['components']['schemas']['get_required_out']['properties']['records']['required']=[]
-            descritpion['components']['schemas']['get_required_out']['properties']['records']['properties']= {}
+            descritpion['components']['schemas']['get_required_out']['properties']['records']['required'] = []
+            descritpion['components']['schemas']['get_required_out']['properties']['records']['properties'] = {}
             for f in getfield:
                 descritpion['components']['schemas']['get_required_out']['properties']['records']['required'].append(f)
                 descritpion['components']['schemas']['get_required_out']['properties']['records']['properties'][f] = \
@@ -84,20 +98,4 @@ class LoadSwagger(LoguruLogger):
                 descritpion['components']['schemas']['post_required_out']['properties'][f] = \
                     {'type': 'string', 'example': postfield[f]}
 
-        # description
-        descritpion['info']['version'] = parms.get('SPECIFICATIONS', {}).get('SERVICE_DESCRITION', {}).get('RELEASE', {})
-        descritpion['info']['title'] = parms.get('SPECIFICATIONS', {}).get('SERVICE_DESCRITION', {}).get('TITLE', {})
-        descritpion['info']['description'] = parms.get('SPECIFICATIONS', {}).get('SERVICE_DESCRITION', {}).get('DESCRITION', {})
-        # tags
-        descritpion['tags'][0]['name'] = parms.get('SPECIFICATIONS', {}).get('SERVICE_DESCRITION', {}).get('TITLE', {})
-        descritpion['paths'][url]['post']['tags'][0]=parms.get('SPECIFICATIONS', {}).get('SERVICE_DESCRITION', {}).get('TITLE', {})
-        descritpion['paths'][url]['get']['tags'][0]=parms.get('SPECIFICATIONS', {}).get('SERVICE_DESCRITION', {}).get('TITLE', {})
-        # service descriptions
-        descritpion['paths'][url]['get']['description']=parms.get('SPECIFICATIONS', {}).get('GET', {}).get('DESCRITION', {})
-        descritpion['paths'][url]['post']['description']=parms.get('SPECIFICATIONS', {}).get('POST', {}).get('DESCRITION', {})
-
-        #path rename
-        if new_url!= url:
-            descritpion['paths'][new_url] = descritpion['paths'][url].copy()
-            del descritpion['paths'][url]
         return descritpion

@@ -1,23 +1,23 @@
   openapi: 3.0.0
   info:
-    version: "1.0.0"
-    title: Simple Service API
-    description: Template service configuration
+    version: ${SPECIFICATIONS.SERVICE_DESCRITION.RELEASE}
+    title: ${SPECIFICATIONS.SERVICE_DESCRITION.TITLE}
+    description: ${SPECIFICATIONS.SERVICE_DESCRITION.TITLE}
 
   tags:
-    - name: SimpleService
+    - name: ${SPECIFICATIONS.SERVICE_DESCRITION.TITLE}
       description: perform service
     - name: HealthCheck
       description: Health check informations
   paths:
-     /+-template-+/v1/{message_idt}/{source_system}:
+     /${URL}/${SPECIFICATIONS.VERSION}/{message_idt}/{source_system}:
       get:
         tags:
-          - SimpleService
+          - ${SPECIFICATIONS.SERVICE_DESCRITION.TITLE}
         summary: query data
         #operationId: SimpleServiceGet
         description: |
-          Get rows from some tables
+          ${SPECIFICATIONS.GET.DESCRITION}
         parameters:
           - in: path
             name: message_idt
@@ -60,11 +60,11 @@
                   $ref: '#/components/schemas/get_required_out'
       post:
         tags:
-          - SimpleService
+          - ${SPECIFICATIONS.SERVICE_DESCRITION.TITLE}
         summary: post data
         #operationId: SimpleServicePost
         description: |
-          Post data to DB
+          ${SPECIFICATIONS.POST.DESCRITION}
         parameters:
           - in: path
             name: message_idt
@@ -105,7 +105,7 @@
               application/json:
                 schema:
                   $ref: '#/components/schemas/post_required_out'
-     /+-template-+/status:
+     /${URL}/status:
       get:
         tags:
           - HealthCheck
@@ -140,7 +140,7 @@
           method:
             type: string
             format: string
-            example: +-template-+
+            example: ${URL}
           message_idt:
             type: string
             format: uuid
@@ -173,7 +173,7 @@
           method:
             type: string
             format: string
-            example: +-template-+
+            example: ${URL}
           message_idt:
             type: string
             format: uuid

@@ -1,23 +1,23 @@
   openapi: 3.0.0
   info:
-    version: "1.0.0"
-    title: Simple Service API
-    description: Template service configuration
+    version: ${SPECIFICATIONS.SERVICE_DESCRITION.RELEASE}
+    title: ${SPECIFICATIONS.SERVICE_DESCRITION.TITLE}
+    description: ${SPECIFICATIONS.SERVICE_DESCRITION.TITLE}
 
   tags:
-    - name: SimpleService
+    - name: ${SPECIFICATIONS.SERVICE_DESCRITION.TITLE}
       description: perform service
     - name: HealthCheck
       description: Health check informations
   paths:
-     /+-template-+/v1/{message_idt}/{source_system}:
+     /${URL}/${SPECIFICATIONS.VERSION}/{message_idt}/{source_system}:
       get:
         tags:
-          - SimpleService
+          - ${SPECIFICATIONS.SERVICE_DESCRITION.TITLE}
         summary: query data
-        operationId: SimpleServiceGet
+        #operationId: SimpleServiceGet
         description: |
-          Get rows from some tables
+          ${SPECIFICATIONS.GET.DESCRITION}
         parameters:
           - in: path
             name: message_idt
@@ -60,11 +60,11 @@
                   $ref: '#/components/schemas/get_required_out'
       post:
         tags:
-          - SimpleService
+          - ${SPECIFICATIONS.SERVICE_DESCRITION.TITLE}
         summary: post data
-        operationId: SimpleServicePost
+        #operationId: SimpleServicePost
         description: |
-          Post data to DB
+          ${SPECIFICATIONS.POST.DESCRITION}
         parameters:
           - in: path
             name: message_idt
@@ -105,7 +105,7 @@
               application/json:
                 schema:
                   $ref: '#/components/schemas/post_required_out'
-     /+-template-+/status:
+     /${URL}/status:
       get:
         tags:
           - HealthCheck
@@ -129,6 +129,7 @@
       get_required_out:
         type: object
         required:
+          - method
           - message_idt
           - source_system
           - rc
@@ -136,6 +137,10 @@
           - input_parms
           - records
         properties:
+          method:
+            type: string
+            format: string
+            example: ${URL}
           message_idt:
             type: string
             format: uuid
@@ -158,12 +163,17 @@
       post_required_out:
         type: object
         required:
+          - method
           - message_idt
           - source_system
           - rc
           - message
           - input_parms
         properties:
+          method:
+            type: string
+            format: string
+            example: ${URL}
           message_idt:
             type: string
             format: uuid
@@ -198,13 +208,15 @@
           - maxConfQueue
           - dbConfConPool
           - dbConfTimeout
+          - srcVersion
+          - configRelease
         properties:
           rc:
             type: integer
             example: 200
           message:
             type: string
-            example: Some result message
+            example: Service is up
           db_status:
             type: string
             example: Up
@@ -241,3 +253,9 @@
           dbConfTimeout:
             type: integer
             example: 10000
+          srcVersion:
+            type: string
+            example: 2020_10_20
+          configRelease:
+            type: string
+            example: 2020_10_20

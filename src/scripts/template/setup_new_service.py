@@ -15,7 +15,6 @@ assert dirpath.find(args.newName) > 0, 'Current dir does not equal service name 
 def doChange(p):
     sp = ['run.sh',
           'config_log.yaml',
-          'swagger_template.yaml',
           'config_service.yaml',
           'systemd/api-template.socket',
           'systemd/api-template.service',
