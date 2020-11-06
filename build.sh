@@ -67,7 +67,7 @@ rm ./_build/simpleservice/lib/ujson.*.so
 
 cd ./_build
 find . -name "*.pyc" -type f -delete
-tar -czf ../dist/$osType/simpleservice-$osType.tar.gz ./simpleservice/
+tar -czf ../dist/$osType/simpleservice_$osType.tar.gz ./simpleservice/
 cd ..
 rm -rf ./_build
 
